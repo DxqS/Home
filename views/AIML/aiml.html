@@ -9,9 +9,7 @@
     $(function () {
         $('#ask').click(function () {
             $.post(window.location.pathname, {'ask': $('input[name="ask"]').val()}, function (res) {
-                console.log(res);
                 if (res.status == 1) {
-                    alert(res.respond);
                     $('textarea').val(res.respond)
                 }
             })

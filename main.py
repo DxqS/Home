@@ -27,9 +27,11 @@ class Handler(tornado.web.RequestHandler):
 
     def post(self):
         ask = self._get_argument('ask', default=None, source=self.request.arguments, strip=True)
-        print ask
-        respond = 1
-        return self.finish(base.rtjson(respond=respond))
+        res = {
+            'respond': str(ask) + 'hello',
+            'status': 1
+        }
+        return self.finish(res)
 
 
 def make_app():
