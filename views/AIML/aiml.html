@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>这是一个AI</title>
+    <script type="text/javascript" src="/static/js/jquery.js"></script>
+<body>
+<script>
+    $(function () {
+        $('#ask').click(function () {
+            $.post(window.location.pathname, {'ask': $('input[name="ask"]').val()}, function (res) {
+                console.log(res);
+                if (res.status == 1) {
+                    alert(res.respond);
+                    $('textarea').val(res.respond)
+                }
+            })
+        })
+    })
+</script>
+<input name="ask">
+<button id="ask">Ask</button>
+<div>
+    <textarea>
+
+    </textarea>
+</div>
+</body>
+</html>
