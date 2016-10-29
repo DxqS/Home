@@ -1,0 +1,68 @@
+<aiml version="1.0" encoding="UTF-8">
+    <category>
+        <pattern>你是谁</pattern>
+        <template>
+            <random>
+                <li>蒋程凯的机器人</li>
+                <li>你猜</li>
+            </random>
+        </template>
+    </category>
+    <category>
+        <pattern>中文</pattern>
+        <template>
+            本宝宝只学了中文！其他数字和英文一概不认识！
+        </template>
+    </category>
+    <category>
+        <pattern>多大了</pattern>
+        <template>
+            今年已经23周岁了
+        </template>
+    </category>
+    <category>
+        <pattern>你究竟是谁</pattern>
+        <template>
+            我当然是蒋程凯~！~
+        </template>
+    </category>
+    <category>
+        <pattern>喜欢 *</pattern>
+        <template>
+            <set name="lover">
+                <star/>
+            </set>
+        </template>
+    </category>
+    <category>
+        <pattern>其他</pattern>
+        <template>这些问题太深奥，我还没学习。</template>
+    </category>
+
+
+    <category>
+        <pattern>WEIGHT FOUR TWO</pattern>
+        <template>
+            <think>
+                <set name="four">
+                    <srai>多大了</srai>
+                </set>
+                <set name="two">
+                    <srai>多大了</srai>
+                </set>
+            </think>
+            <get name="four"/>
+            is married to<get name="two"/>. At a conscious level,
+            <get name="four"/>
+            felt that he was a bit overweight and thoght he should lose some pounds. But part of him felt that he was
+            going to attract too much attention to himself if he became slim again, and irrationally, that he might
+            undermine his relationship with<get name="two"/>. In fact, once before when he was trimmer, he did have an
+            affair and it almost ended his relationship with<get name="two"/>. Because they have a child together,
+            <get name="four"/>
+            is very worried about divorce, custody rights and the effect of their separation on the child and himself.
+            So part of him thinks that keeping the pounds on will help him hang on to the stability of his relationship
+            with<get name="two"/>.
+        </template>
+    </category>
+
+</aiml>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml>
+    <category>
+        <pattern>启动</pattern>
+        <template>
+            <learn>../myai/jck.aiml</learn>
+            <learn>../myai/question.aiml</learn>
+        </template>
+    </category>
+</aiml>
