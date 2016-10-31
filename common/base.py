@@ -43,3 +43,7 @@ class Storage(dict):
 
     def __repr__(self):
         return '<Storage ' + dict.__repr__(self) + '>'
+
+
+def aa():
+    pass
