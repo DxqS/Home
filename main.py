@@ -35,7 +35,8 @@ class Handler(tornado.web.RequestHandler):
 
 
 def make_app():
-    return tornado.web.Application([('/aiml', Handler)], **settings)
+    aa = [('/aiml', Handler), ('/aiml2', Handler)]
+    return tornado.web.Application(aa, **settings)
 
 
 if __name__ == "__main__":
