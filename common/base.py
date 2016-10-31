@@ -45,5 +45,3 @@ class Storage(dict):
         return '<Storage ' + dict.__repr__(self) + '>'
 
 
-def aa():
-    pass
