@@ -8,24 +8,22 @@
 {% end %}
 
 {% block nav %}
-{% module Template("module/backnav.html", name='user') %}
+{% module Template("module/backnav.html", name='cert') %}
 {% end %}
 
 
 {% block container%}
 <div class="container">
-
-    <h3>用户
+    <h3>认证
         <small>列表</small>
     </h3>
     <hr/>
 
     <div class="row">
         <div class="col-xs-3">
-
             <div class="list-group layout-mt20">
-                <a href="" class="list-group-item active">基本信息</a>
-                <a href="" class="list-group-item ">占坑</a>
+                <a href="/m/cert/net/list" class="list-group-item active">网红认证</a>
+                <a href="/m/cert/edu/list" class="list-group-item ">教育机构认证</a>
             </div>
 
         </div>
@@ -37,6 +35,7 @@
                     <th>ID</th>
                     <th>头像</th>
                     <th>微信昵称</th>
+                    <th>游戏昵称</th>
                     <th>状态</th>
                     <th>操作</th>
                 </tr>
@@ -44,10 +43,13 @@
                 <tbody>
 
                 <tr>
-                    <td>800001</td>
-                    <td><img src="/static/img/logo.png" width="100" alt=""></td>
+                    <td>1</td>
+                    <td><img src="" width="100" alt=""></td>
                     <td>阿达</td>
-                    <td>未认证</td>
+                    <td>爱的</td>
+                    <td>
+                        未认证
+                    </td>
                     <td align="right">
                         <a href="" class="btn btn-primary btn-sm">查看</a>
                     </td>
