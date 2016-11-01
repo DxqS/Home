@@ -1,38 +1,38 @@
-local:
-  TOKEN: zhangzhen
-  APP_ID: wx60f833aaeec1a5a3
-  APP_SECRET: 3842d816bd58dee4b685a17ec18d2096
-  MCH_ID: 1354231202
-  PAY_KEY: HyI2Lf487fjE5rDAGdsUEBOl2uVBs67c
-  APICLIENT_CERT: resource/apiclient_cert.pem
-  APICLIENT_KEY: resource/apiclient_key.pem
-
-
-develop:
-  TOKEN: zhangzhen
-  APP_ID: wx60f833aaeec1a5a3
-  APP_SECRET: 3842d816bd58dee4b685a17ec18d2096
-  MCH_ID: 1354231202
-  PAY_KEY: HyI2Lf487fjE5rDAGdsUEBOl2uVBs67c
-  APICLIENT_CERT: resource/apiclient_cert.pem
-  APICLIENT_KEY: resource/apiclient_key.pem
-
-
-test:
-  TOKEN: gaoliangliang
-  APP_ID: wx7b098e16180c19b0
-  APP_SECRET: e8697a208515344f268dd178a5e95f92
-  MCH_ID: 1354231202
-  PAY_KEY: HyI2Lf487fjE5rDAGdsUEBOl2uVBs67c
-  APICLIENT_CERT: resource/apiclient_cert.pem
-  APICLIENT_KEY: resource/apiclient_key.pem
-
-
-release:
-  TOKEN: yanshazhengba
-  APP_ID: wx28773b77e9f534e6
-  APP_SECRET: 704d2ad058809ba03d0f936554119455
-  MCH_ID: 1354231202
-  PAY_KEY: HyI2Lf487fjE5rDAGdsUEBOl2uVBs67c
-  APICLIENT_CERT: resource/apiclient_cert.pem
-  APICLIENT_KEY: resource/apiclient_key.pem
+#local:
+#  TOKEN: zhangzhen
+#  APP_ID: wx60f833aaeec1a5a3
+#  APP_SECRET: 3842d816bd58dee4b685a17ec18d2096
+#  MCH_ID: 1354231202
+#  PAY_KEY: HyI2Lf487fjE5rDAGdsUEBOl2uVBs67c
+#  APICLIENT_CERT: resource/apiclient_cert.pem
+#  APICLIENT_KEY: resource/apiclient_key.pem
+#
+#
+#develop:
+#  TOKEN: zhangzhen
+#  APP_ID: wx60f833aaeec1a5a3
+#  APP_SECRET: 3842d816bd58dee4b685a17ec18d2096
+#  MCH_ID: 1354231202
+#  PAY_KEY: HyI2Lf487fjE5rDAGdsUEBOl2uVBs67c
+#  APICLIENT_CERT: resource/apiclient_cert.pem
+#  APICLIENT_KEY: resource/apiclient_key.pem
+#
+#
+#test:
+#  TOKEN: gaoliangliang
+#  APP_ID: wx7b098e16180c19b0
+#  APP_SECRET: e8697a208515344f268dd178a5e95f92
+#  MCH_ID: 1354231202
+#  PAY_KEY: HyI2Lf487fjE5rDAGdsUEBOl2uVBs67c
+#  APICLIENT_CERT: resource/apiclient_cert.pem
+#  APICLIENT_KEY: resource/apiclient_key.pem
+#
+#
+#release:
+#  TOKEN: yanshazhengba
+#  APP_ID: wx28773b77e9f534e6
+#  APP_SECRET: 704d2ad058809ba03d0f936554119455
+#  MCH_ID: 1354231202
+#  PAY_KEY: HyI2Lf487fjE5rDAGdsUEBOl2uVBs67c
+#  APICLIENT_CERT: resource/apiclient_cert.pem
+#  APICLIENT_KEY: resource/apiclient_key.pem
