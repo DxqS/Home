@@ -1,0 +1,39 @@
+{% extends "../layout/base.html" %}
+
+
+{% block base_meta %}
+{% block meta %}{% end %}
+{% end %}
+
+{% block base_css %}
+<!-- Bootstrap -->
+{% module Template("macro/css.html", filepath='back/css/bootstrap.min.css') %}
+{% module Template("macro/css.html", filepath='back/css/background.css') %}
+{% block css %}{% end %}
+{% end %}
+
+
+{% block base_js %}
+{% module Template("macro/importjs.html", filepath='js/bootstrap.min.js') %}
+{% module Template("macro/importjs.html", filepath='js/formUtils.js') %}
+{% block js %}{% end %}
+{% end %}
+
+{% block body%}
+
+<div class="header clearfix">
+    <div class="container">
+        <div class="pull-right zb-header-links">
+            <a class="btn btn-link">{{session['uname']}}</a>
+            <a class="btn btn-link" href="/m/logout">安全退出</a>
+        </div>
+        <h3>{{gconf['web_name']}}后台</h3>
+    </div>
+</div>
+
+{% block nav %}{% end %}
+
+{% block container %}
+{% end %}
+
+{% end %}

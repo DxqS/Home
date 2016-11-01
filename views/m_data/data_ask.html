@@ -1,0 +1,61 @@
+{% extends "../layout/mbase.html" %}
+
+{% block css %}{% end %}
+
+{% block js %}
+<script>
+    $(function () {
+        $('.btn').click(function () {
+            var btn_typ = $(this).data('typ');
+            var data = {'start': $('#' + btn_typ + '_1').val(), 'end': $('#' + btn_typ + '_2').val()};
+
+            $.post(window.location.pathname, data, function (res) {
+                $('#add_' + btn_typ).html("");
+                $('#add_' + btn_typ).append(res)
+            }, 'html')
+        })
+    })
+</script>
+{% end %}
+
+{% block nav %}
+{% module Template("module/backnav.html", name='data') %}
+{% end %}
+
+
+{% block container%}
+<div class="container">
+    <div class="row" style="...">
+        <div class="pull-right layout-ml20 col-md-8" style="...">
+            <!--<a href="#" class="btn btn-primary pull-right btn-sm">点击刷新</a>-->
+            <!--<span class="layout-mr10 pull-right">从 <time>2016/7/31 17:00:00</time> 到 2016/7/31 17:00:00的转化率（已支付/宝描打开量）</span>-->
+        </div>
+        <h3>
+            时间维度
+            <small>查询</small>
+        </h3>
+        <hr/>
+    </div>
+    <div class="row">
+        <div class="col-xs-2">
+            <div class="list-group layout-mt20">
+                <a href="/m/data/list" class="list-group-item ">数据总览</a>
+                <a href="/m/data/trial/list" class="list-group-item">试玩数据</a>
+                <a href="/m/data/ask/list" class="list-group-item active">催付数据</a>
+                <a href="/m/data/game/list" class="list-group-item">游戏数据</a>
+            </div>
+        </div>
+        <div class="col-xs-9">
+
+            从 <input type="datetime-local" id="trial_1">到<input type="datetime-local"
+                                                                class="form-inline" id="trial_2">的数据：
+            <button class="btn btn-primary" type="button" data-typ="trial">查询</button>
+
+            <ul id="add_trial"></ul>
+        </div>
+    </div>
+
+
+</div>
+
+{% end %}

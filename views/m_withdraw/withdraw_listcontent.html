@@ -1,0 +1,32 @@
+
+             <table class="table table-hover layout-mt20">
+                <thead>
+                <tr>
+                    <th>交易号</th>
+                    <th>金额</th>
+                    <th>时间</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                 <tbody>
+                 {% for withdraw in withdrawList%}
+                 <tr>
+                     <td>{{withdraw.pay_trade_no}}</td>
+                     <td>{{withdraw.amount}}</td>
+                     <td>{{ftime(withdraw.ctime)}}</td>
+                     {%if withdraw.status==1%}
+                     <td>提现成功</td>
+                     <td></td>>
+                     {%elif withdraw.status==0%}
+                     <td>提现中</td>
+                     <td align="right">
+                         <a href="" data-wid="{{withdraw.id}}" class="btn btn-primary btn-sm">批准提现</a>
+                     </td>
+                     {%end%}
+                 </tr>
+                 {%end%}
+                 </tbody>
+            </table>
+
+            {% module Template("module/bspager.html", pager=pager,url="/m/withdraw/searchlist?pagenum=:page:") %}

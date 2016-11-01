@@ -1,0 +1,429 @@
+{% extends "../layout/mbase.html" %}
+
+{% block css %}{% end %}
+
+{% block js %}
+{% module Template("module/js.html", filepath='zui/upyun/spark-md5.min.js') %}
+{% module Template("module/js.html", filepath='zui/upyun/async.min.js') %}
+{% module Template("module/js.html", filepath='zui/upyun/upyun-mu.js') %}
+
+
+<script>
+    //---------------提现--------------------------
+    $(function () {
+        $('table tr .btn-sm').click(function () {
+            if (confirm("确定支付吗？")) {
+                $.post('/m/withDraw/' + $(this).data('wid'), function (res) {
+                    if (res.status == 1) {
+                        window.location.reload();
+                    }
+                }, 'json');
+            }
+
+            return false;
+        });
+    });
+</script>
+
+<script>
+    //----------------------上传logo或者照片----------------------
+    $(function () {
+        var upconfig = {
+            bucket: '{{gconf["up_file_bucket"]}}',
+            expiration: parseInt((new Date().getTime() + 3600000) / 1000),
+            // 尽量不要使用直接传表单 API 的方式，以防泄露造成安全隐患
+            form_api_secret: '{{gconf["up_file_secret"]}}'
+        };
+
+
+        $('#J-upfile-btn').click(function () {
+            if ($(this).html() == "上传") {
+                $(this).html("上传中...");
+                $('#file').click();
+            }
+
+            return false;
+        });
+
+        $('#file').change(function () {
+            var ext = '.' + document.getElementById('file').files[0].name.split('.').pop();
+            var instance = new Sand(upconfig);
+            var options = {
+                'notify_url': 'http://upyun.com'
+            };
+
+            instance.setOptions(options);
+            instance.upload('/upload/test/' + parseInt((new Date().getTime() + 3600000) / 1000) + ext);
+        });
+
+        document.addEventListener('uploaded', function (e) {
+            var data = e.detail;
+            var path = "http://{{gconf['up_file_bucket']}}.b0.upaiyun.com" + data["path"];
+            console.log(path);
+
+            $(e.path[0].activeElement).html("上传").removeAttr("disabled");
+            var img = $(e.path[0].activeElement).prev('img');
+            img.attr('src', path);
+            $('#J-photo-hid').val(data["path"]);
+
+        });
+
+    });
+</script>
+
+<script>
+    //--------------------------修改----------------------------
+    $(function () {
+        $('#J-add-btn').click(function () {
+            var data = $.formUtils.formData($(this).parent('form'));
+            console.log(data);
+            $.post(window.location.pathname, data, function (res) {
+                if (res.status == 1) {
+                    history.back();
+                }
+            }, 'json');
+        })
+        $('.J-cert-btn').click(function () {
+            $.post('/m/user/cert', {'typ': $(this).data('typ'), 'uid': $('#uid').val()}, function (res) {
+                if (res.status == 1) {
+                    window.location.href = '/m/user/list/cert'
+                }
+            }, 'json')
+
+        })
+
+    })
+</script>
+{% end %}
+
+{% block nav %}
+{% module Template("module/backnav.html", name='user') %}
+{% end %}
+
+
+{% block container%}
+
+
+<div class="container">
+
+    <div class="container">
+        <a href="javascript:history.back();"
+           class="btn btn-primary pull-right btn-sm layout-mt20">返回</a>
+        <h3>玩家
+            <small>编辑</small>
+        </h3>
+        <div>
+
+            <div class="row">
+                <div class="col-xs-9">
+                    <input type="hidden" id="uid" value="{{userInf.id}}">
+                    <hr/>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <ul id="myTabs" class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active">
+                                    <a href="#home" id="home-tab" role="tab" data-toggle="tab" aria-controls="home"
+                                       aria-expanded="true">基本信息</a>
+                                </li>
+                                {%if game_info%}
+                                <li role="presentation" class="">
+                                    <a href="#game" id="game-tab" role="tab" data-toggle="tab"
+                                       aria-controls="game"
+                                       aria-expanded="false">游戏信息</a>
+                                </li>
+                                {%end%}
+                                <li role="presentation" class="">
+                                    <a href="#profit" id="profit-tab" role="tab" data-toggle="tab"
+                                       aria-controls="profit"
+                                       aria-expanded="false">收益信息</a>
+                                </li>
+
+                                <li role="presentation" class="">
+                                    <a href="#profile" id="profile-tab" role="tab" data-toggle="tab"
+                                       aria-controls="profile"
+                                       aria-expanded="false">提现记录</a>
+                                </li>
+
+                                <li role="presentation" class="">
+                                    <a href="#cert" id="cert-tab" role="tab" data-toggle="tab"
+                                       aria-controls="cert"
+                                       aria-expanded="false">认证信息</a>
+                                </li>
+
+                            </ul>
+                            <div id="myTabContent" class="tab-content layout-mt20">
+                                <div role="tabpanel" class="tab-pane active in" id="home" aria-labelledby="home-tab">
+                                    <form class="form-horizontal">
+
+                                        <div class="form-group">
+                                            <label class="control-label col-xs-2">头像：</label>
+                                            <div class="col-xs-5">
+                                                <img src="{{upfile(userInf.headimgurl)}}" width="80" alt="">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-xs-2">微信昵称：</label>
+
+                                            <div class="col-xs-5">
+                                                <input type="text" class="form-control" name="name"
+                                                       value="{{userInf.user_name}}"
+                                                       placeholder="">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-xs-2">游戏昵称：</label>
+
+                                            <div class="col-xs-5">
+                                                <input type="text" class="form-control" name="nick_name"
+                                                       value="{{userInf.nick_name}}"
+                                                       placeholder="">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-xs-2">性别：</label>
+
+                                            <div class="col-xs-5">
+                                                <select name="sex">
+
+                                                    <option value="1" {%if userInf.sex==1 %}selected="selected" {%end%}>
+                                                        男
+                                                    </option>
+
+                                                    <option value="2" {%if userInf.sex==2 %}selected="selected" {%end%}>
+                                                        女
+                                                    </option>
+
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-xs-2">购买状态：</label>
+                                            <div class="col-xs-5">
+                                                {%if userInf.player%}
+                                                <p>已购买</p>
+                                                {%else%}
+                                                <p>未购买</p>
+                                                {%end%}
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-xs-2">分销人数：</label>
+                                            <div class="col-xs-5">
+                                                {{user_dis_count}}个
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-xs-2">收益：</label>
+                                            <div class="col-xs-5">
+                                                {{userInf.amount if userInf.amount else '0.00'}}元
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-xs-2">已提现金额：</label>
+                                            <div class="col-xs-5">
+                                                {{user_had_withdraw if user_had_withdraw else '0.00'}}元
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-xs-2">未提现金额：</label>
+                                            <div class="col-xs-5">
+                                                {{user_not_withdraw if user_not_withdraw else '0.00'}}元
+                                            </div>
+                                        </div>
+                                        <div class="alert alert-danger" style="display: none;">
+                                            <strong>失败！</strong> 失败细节啥啥啥...
+                                        </div>
+
+                                        <a id="J-add-btn" class="btn btn-primary"> 修改 </a>
+                                    </form>
+
+                                </div>
+                                {%if game_info%}
+                                <div role="tabpanel" class="tab-pane" id="game" aria-labelledby="profit-tab">
+                                    <table class="table table-bordered text-center layout-mt10"
+                                           style="font-size: smaller">
+                                        <tr>
+                                            <td>所在章节</td>
+                                            <td>所在关口</td>
+                                            <td>累计元宝数</td>
+                                            <td>已使用元宝数</td>
+                                            <td>剩余元宝数</td>
+                                            <td>等级</td>
+                                            <td>金币</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{game_info[0]}}</td>
+                                            <td>{{game_info[1]}}</td>
+                                            <td>{{game_info[2]}}</td>
+                                            <td>{{game_info[3]}}</td>
+                                            <td>{{game_info[4]}}</td>
+                                            <td>{{game_info[5]}}</td>
+                                            <td>{{game_info[6]}}</td>
+                                        </tr>
+                                    </table>
+                                    <table border="1" class="table table-bordered text-center layout-mt10">
+                                        <tr>
+                                            <th>章节</th>
+                                            <th>关卡</th>
+                                            <th>test(失败)</th>
+                                            <th>exam(失败)</th>
+                                            <th>test(完胜)</th>
+                                            <th>exam(完胜)</th>
+                                        </tr>
+                                        {%for i in range(10) %}
+                                        <tr>
+                                            <th rowspan={{len(game_test_info[i])+1}}>{{i+1}}</th>
+                                        </tr>
+                                        {%for ss in game_test_info[i]%}
+                                        <tr>
+                                            <td>{{ss['section']}}</td>
+                                            <td>{{ss['test_f']}}</td>
+                                            <td>{{ss['exam_f']}}</td>
+                                            <td>{{ss['test_s']}}</td>
+                                            <td>{{ss['exam_s']}}</td>
+                                        </tr>
+                                        {%end%}
+                                        {%end%}
+                                    </table>
+
+                                </div>
+                                {%end%}
+                                <div role="tabpanel" class="tab-pane" id="profit" aria-labelledby="profit-tab">
+                                    <table class="table table-hover layout-mt20">
+                                        <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>名称</th>
+                                            <th>收益</th>
+                                            <th>时间</th>
+                                            <th>途径</th>
+
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for profit in userProfit%}
+                                        <tr>
+                                            <td><img src="http://placehold.it/80x80" alt="" width="50px;"></td>
+                                            <td>{{profit.order.user.user_name}}</td>
+                                            <td style="color: #d9534f;">{{profit.income}}</td>
+                                            <td>{{ftime(profit.ctime)}}</td>
+                                            {%if profit.level==1%}
+                                            <td>一级玩家</td>
+                                            {%elif profit.level==2%}
+                                            <td>二级玩家</td>
+                                            {%elif profit.level==3%}
+                                            <td>三级玩家</td>
+                                            {%end%}
+                                        </tr>
+                                        {%end%}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div role="tabpanel" class="tab-pane" id="profile" aria-labelledby="profile-tab">
+                                    <table class="table table-hover layout-mt20">
+                                        <thead>
+                                        <tr>
+                                            <th>交易号</th>
+                                            <th>金额</th>
+                                            <th>时间</th>
+                                            <th>状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for withdraw in userWithdraw%}
+                                        <tr>
+                                            <td>{{withdraw.pay_trade_no}}</td>
+                                            <td>{{withdraw.amount}}</td>
+                                            <td>{{ftime(withdraw.ctime)}}</td>
+                                            {%if withdraw.status==1%}
+                                            <td>提现成功</td>
+                                            {%elif withdraw.status==0%}
+                                            <td>提现中</td>
+                                            <td align="right">
+                                                <a href="" data-wid="{{withdraw.id}}" class="btn btn-primary btn-sm">批准提现</a>
+                                            </td>
+                                            {%end%}
+                                        </tr>
+                                        {%end%}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div role="tabpanel" class="tab-pane" id="cert" aria-labelledby="cert-tab">
+                                    <form class="form-horizontal">
+                                        <div class="form-group">
+                                            <label class="control-label col-xs-2">真实姓名：</label>
+
+                                            <div class="col-xs-5">
+                                                <input type="text" class="form-control" name="real_name"
+                                                       value="{{userInf.real_name}}"
+                                                       placeholder="">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-xs-2">身份证号：</label>
+
+                                            <div class="col-xs-5">
+                                                <input type="text" class="form-control" name="idcard_no"
+                                                       value="{{userInf.idcard_no}}"
+                                                       placeholder="">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="control-label col-xs-2">支付宝号：</label>
+
+                                            <div class="col-xs-5">
+                                                <input type="text" class="form-control" name="alipay_no"
+                                                       value="{{userInf.alipay_no}}"
+                                                       placeholder="">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-xs-2">手机号：</label>
+
+                                            <div class="col-xs-5">
+                                                <input type="text" class="form-control" name="mobile"
+                                                       value="{{userInf.mobile}}"
+                                                       placeholder="">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="control-label col-xs-2">身份证正面：</label>
+                                            <div class="col-xs-5">
+                                                <img src="{{card_img(userInf.id,'a')}}" width="500" alt="">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="control-label col-xs-2">身份证反面：</label>
+                                            <div class="col-xs-5">
+                                                <img src="{{card_img(userInf.id,'b')}}" width="500" alt="">
+                                            </div>
+                                        </div>
+
+                                        {%if userInf.cert_status==1%}
+                                        <a class="btn btn-primary J-cert-btn" data-typ="pass"> 通过 </a>
+                                        <a class="btn btn-danger J-cert-btn" data-typ="unpass"> 不通过 </a>
+                                        {%end%}
+
+
+                                    </form>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <br/>
+        </div>
+    </div>
+
+</div>
+{%end%}

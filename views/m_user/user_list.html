@@ -1,0 +1,91 @@
+{% extends "../layout/mbase.html" %}
+
+{% block css %}{% end %}
+
+{% block js %}
+
+<script>
+    $(function () {
+        $('.usersearch').click(function () {
+            var keyword = $.trim($('.usernamekeyword').val());
+            if (keyword != '') {
+                window.location.href = window.location.pathname + '?keyword=' + keyword;
+//                var data = {'keyword': keyword, 'user': 'user'};
+//                $.post('/m/user/searchlist', data, function (res) {
+//                    $('#searchcontent').empty();
+//                    $('#searchcontent').html(res);
+//                }, 'html');
+            } else {
+                alert('搜索框为空，请先填写，再搜索');
+                return;
+            }
+        });
+    });
+
+
+</script>
+
+{% end %}
+
+{% block nav %}
+{% module Template("module/backnav.html", name='user') %}
+{% end %}
+
+
+{% block container%}
+<div class="container">
+    <!--<a href="#" class="btn btn-primary pull-right btn-sm layout-mt20">添加</a>-->
+
+    <h3>用户
+        <small>列表</small>
+    </h3>
+    <hr/>
+
+    <div class="row">
+        <div class="col-xs-3">
+            <div class="input-group layout-mt20">
+                <span class="input-group-btn"> <a class="btn btn-default usersearch"> 搜索 </a> </span>
+            </div>
+
+            <div class="list-group layout-mt20">
+                <a href="" class="list-group-item active">申请认证</a>
+                <a href="" class="list-group-item ">已购买</a>
+                <a href="" class="list-group-item ">未购买</a>
+            </div>
+
+        </div>
+
+        <div class="col-xs-9 " id="searchcontent">
+            <table class="table table-hover layout-mt20">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>头像</th>
+                    <th>微信昵称</th>
+                    <th>游戏昵称</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr>
+                    <td>1</td>
+                    <td><img src="2" width="100" alt=""></td>
+                    <td>阿达</td>
+                    <td>爱的</td>
+                    <td>
+                        未认证
+                    </td>
+                    <td align="right">
+                        <a href="" class="btn btn-primary btn-sm">查看</a>
+                    </td>
+                </tr>
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% end %}

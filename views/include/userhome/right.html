@@ -1,0 +1,66 @@
+<div class="right">
+    <div class="user-info clearfix">
+        <a href="/u/{{user._id}}" class="img"><img class="c_r3" src="{{user._id|avatar('user',80)}}"/></a>
+
+        <div class="uinfo-right">
+            <span class="nick">{{user._id|nick}}</span>
+            <span class="sex-ico"></span>
+
+            <div class="clearfix"></div>
+            {%if session.uid!=user._id%}
+            {%if user._id|isfollow%}
+            <div class="ui-button skin-button-white-followed" id="J-follow-btn" isflw="1" uid="{{user._id}}">
+                <span class="ui-button-bg-left"></span>
+
+                <div class="ui-button-label">
+                    <span class="ui-button-ico"></span>
+                    <span class="ui-button-text">已关注</span>
+                </div>
+            </div>
+            {%else%}
+            <div class="ui-button skin-button-white-follow" id="J-follow-btn" isflw="0" uid="{{user._id}}">
+                <span class="ui-button-bg-left"></span>
+
+                <div class="ui-button-label">
+                    <span class="ui-button-ico"></span>
+                    <span class="ui-button-text">关注</span>
+                </div>
+            </div>
+            {%endif%}
+            <div class="ui-button skin-button-white-msg" id="J-msg-btn">
+                <a href="/message/send/{{user._id}}" target="_blank">
+                    <span class="ui-button-bg-left"></span>
+
+                    <div class="ui-button-label">
+                        <span class="ui-button-ico"></span>
+                        <span class="ui-button-text">私信</span>
+                    </div>
+                </a>
+            </div>
+            {%endif%}
+        </div>
+        <p class="addr">长居地：<span>{{user.province}}&nbsp;&nbsp;{{user.city}}</span></p>
+
+        <p class="sign">{{user.motto}}</p>
+    </div>
+    {%if user.mdds%}
+    <h3>{{user._id|genitive(user.sex)}}喜欢的目的地</h3>
+
+    <div class="like-mdds clearfix">
+        {%for m in user.mdds%}
+        <a href="/post/mdd/{{m}}">
+            <div class="ui-button skin-button-gray-radius">
+                <span class="ui-button-bg-left"></span>
+
+                <div class="ui-button-label">
+                    <span class="ui-button-text">{{m|mddName}}</span>
+                </div>
+            </div>
+        </a>
+        {%endfor%}
+    </div>
+    {%endif%}
+    <p class="join-time">
+        {{user._id|genitive(user.sex)}}于<span>{{user.ctime|ftime('%Y年%m月%d日',false)}}</span>加入走呗
+    </p>
+</div>

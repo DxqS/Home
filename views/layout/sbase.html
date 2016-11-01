@@ -1,0 +1,70 @@
+{% import "macro/common.html" as common%}
+{% extends "layout/base.html" %}
+
+{% block base_css %}
+<link href="/static/css/third/pure-min.css" type="text/css" rel="stylesheet"/>
+<link href="/static/css/dist/pure-customize.css" type="text/css" rel="stylesheet"/>
+<link href="/static/css/dist/base.css" type="text/css" rel="stylesheet"/>
+{% block css %}{% endblock %}
+{% endblock %}
+
+{% block base_js %}
+<script>
+    $(function () {
+        $('#J-menu li').each(function () {
+            if ($(this).find('a').attr('href') == window.location.pathname) {
+                $(this).addClass('selected');
+            }
+        });
+    });
+</script>
+{% block js %}{% endblock %}
+{% endblock %}
+
+{% block body %}
+<div class="nav">
+    <div class="warp clearfix">
+        <a href="/"><h1 class="logo" style="margin-left: 50px;"></h1></a>
+        <ul id="J-menu">
+            <li>
+                <a href="/">首页</a>
+            </li>
+            <li>
+                <a href="/rck/index">人才库</a>
+            </li>
+            {% if session.uid%}
+            <li>
+                <a href="user/index">我的淘职</a>
+            </li>
+            {% else%}
+            <li>
+                <a href="/login">登陆</a>
+            </li>
+            <li>
+                <a href="/register">注册</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</div>
+<!-- / #intro -->
+{% block container%}
+{% endblock%}
+<!-- / #content -->
+<div class="footer">
+    <div class="links">
+        <a href="/">首页</a>
+        <span>|</span>
+        <a href="/help_6">关于我们</a>
+        <span>|</span>
+        <a href="/contact">联系我们</a>
+        <span>|</span>
+        <a href="help_1">帮助中心</a>
+        <span>|</span>
+        <a href="http://www.hzedcm.com/">E动传媒</a>
+    </div>
+    <p>
+        E动传媒版权所有©2012-2013 浙ICP备14039726号-1
+    </p>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+<div class="impress">
+    {%if p.impress%}
+    <a href="/post/{{p._id}}#impress" target="_blank" class="ilabel">印象<span>（{{p.impress|length}}）</span></a>
+    {%if p.impress|length>9%}
+    {%for i in range(0,10)%}
+    <label class="s{{(loop.index+range(10)|random)%4}} J-impress-item" impid="{{p.impress[i]._id}}"
+           title="{{p.impress[i].agrees|length+1}}个人这么看，点击支持！">
+        {{p.impress[i].text}}
+    </label>
+    {%endfor%}
+    {%else%}
+    {%for im in p.impress%}
+    <label class="s{{(loop.index+range(10)|random)%4}} J-impress-item" impid="{{im._id}}"
+           title="{{im.agrees|length+1}}个人这么看，点击支持！">
+        {{im.text}}
+    </label>
+    {%endfor%}
+    {%endif%}
+    {%endif%}
+</div>

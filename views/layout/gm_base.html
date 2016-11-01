@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name=”format-detection” content=”email=no”/>
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>{% block title %}{% end %}</title>
+
+    {% block base_meta %}{% end %}
+
+
+    <link rel="shortcut icon" href="/static/img/favicon.ico">
+
+    {% module Template("module/css.html", filepath='game/css/dist/base.css') %}<!-- 基础配置 -->
+
+    {% block base_css %}{% end %}
+
+    <!--公共场景模版-->
+
+    <script id="tpl-video" type="text/html">
+        <div class="bg ${bg_class}">
+            <!--师姐密室视频加练习过程-->
+            <div class="video_practise">
+                <div class="video">
+                    <div class="wrapper">
+                        <video id="video" class="video-js vjs-default-skin" webkit-playsinline autoplay="autoplay"
+                               controls
+                               preload="auto"
+                               poster="${video_url}.jpg">
+                            <source src="${video_url}.mp4" type='video/mp4'/>
+                        </video>
+                    </div>
+                    <div class="btnWrapper btns">
+                        <a class="J-return btn" href="javascript:;">返回</a>
+
+                        <a class="J-continue btn" href="javascript:;">${btn_title}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script> <!--看视频-->
+
+    <script id="tpl-answer" type="text/html">
+        <div class="bg">
+            <div class="map">
+                <div class="btn-top">
+
+                </div>
+            </div>
+            <!-- 看我出招 -->
+            <section class="answer">
+                <section class="ques">
+                    <!--
+                    round_1：第一回合
+                    依次
+                    -->
+                    <div class="round round_1"></div>
+                    <!--
+                    answer-1-1：第一章的伴童
+                    answer-2-1：第二章的第一个宝箱
+                    以此类推
+                    -->
+                    <div class="answer_icon"></div>
+                    <div class="watch dhk"></div>
+                    <div class="pagination"><span id="page">1</span> / <span id="pages"></span></div>
+                    <div class="ques-list">
+                        <div class="list-page">
+
+                        </div>
+                    </div>
+                </section>
+                <div class="btnWrapper btns center">
+                    <a class="btn back">上一招</a>
+                    <a class="btn next">出招</a>
+                </div>
+                <!--      <div class="btnWrapper btns center">
+                          <a class="btn next">出招</a>
+                      </div>-->
+            </section>
+            <!-- /看我出招 -->
+        </div>
+
+        <div class="popup"></div>
+
+    </script> <!--答题-->
+
+    <script id="tpl-questions" type="text/template">
+        {@each question_list as question,index}
+        <div class="cell  {@if index==0}display{@/if} ${question.mode|questionMode,question.img}">
+            <div class="ques-wrapper">
+                <p>${question.title}</p>
+            </div>
+
+            {@if question.img}
+            <div class="imgWrapper">
+                <img src="${question.img}" alt="知识图片">
+            </div>
+            {@/if}
+            <div class="sel-wrapper {@if question.mode==20 && !question.img}singleImg{@/if}">
+                <div class="sel ">
+                    {@if question.mode==11 || question.mode==12}
+                    <span class="one" data-value="sel${index|numberPlus}-1"></span>
+                    <span class="two" data-value="sel${index|numberPlus}-2"></span>
+                    <span class="three" data-value="sel${index|numberPlus}-3"></span>
+                    <span class="four" data-value="sel${index|numberPlus}-4"></span>
+                    <span class="five" data-value="sel${index|numberPlus}-5"></span>
+                    <span class="six" data-value="sel${index|numberPlus}-6"></span>
+                    <span class="seven" data-value="sel${index|numberPlus}-7"></span>
+                    <span class="eight" data-value="sel${index|numberPlus}-8"></span>
+                    <span class="nine" data-value="sel${index|numberPlus}-9"></span>
+                    {@else if question.mode==20}
+                    <a class="imgWrapper upload"></a>
+                    {@else}
+                    {@each question.options as option,idx}
+                    <div class="form-control">
+                        <input name="sel${index|numberPlus}" id="sel${index|numberPlus}-${idx|numberPlus}" type="radio">
+                        <label for="sel${index|numberPlus}-${idx|numberPlus}">
+                            ${idx|letter}&nbsp;${option}
+                        </label>
+                    </div>
+                    {@/each}
+                    {@/if}
+                </div>
+            </div>
+        </div>
+        {@/each}
+    </script> <!--题目列表-->
+
+    <script id="tpl-review" type="text/html">
+        <div class="bg {@if gate!=1}bg-${gate}-2{@else}bg-1-3{@/if}">
+            <!-- 错题回顾 -->
+            <section class="review">
+                <div class="cthg">
+                    {@if gate!=1}
+                    <a class="back" href="javascript:;"></a>
+                    {@/if}
+
+                    <div class="BFC">
+                        <section class="exec">
+                            <ul class="exec-list">
+                                {@if length === 1}
+                                {@each review as question,index}
+                                <li class="exec-item ${question.mode|questionMode,question.img}">
+                                    <p class="title">${question.title}</p>
+
+                                    {@if question.img}
+                                    <div class="imgWrapper">
+                                        <img src="${question.img}" alt="知识图片">
+                                    </div>
+                                    {@/if}
+
+                                    {@if question.mode==11 || question.mode==12}
+                                    <ul class="sel">
+                                        {@each question.options as option,idx}
+                                        <li class="${idx|enNum}
+                                        {@each question.answer as answer}
+                                        ${idx|checkClassSix ,answer, question.selected}
+                                        {@/each}"></li>
+                                        {@/each}
+                                    </ul>
+                                    {@else}
+                                    <ul class="options">
+                                        {@each question.options as option,idx}
+                                        <li class="${idx|checkClass ,question.answer, question.selected}">
+                                            <p>${option}</p>
+                                        </li>
+                                        {@/each}
+                                    </ul>
+                                    {@/if}
+
+
+                                </li>
+                                {@/each}
+                                {@else}
+                                {@each review as question,index}
+                                <li class="exec-item ${question.mode|questionMode,question.img}">
+
+                                    {@if question.mode==20}
+                                    <p class="title">${index+1}.{@if question.selected==1}通过{@else}不通过{@/if}</p>
+                                    <p class="ans">${question.comment}</p>
+                                    {@else}
+                                    <p class="title">${question.title}</p>
+                                    {@/if}
+
+                                    {@if question.img}
+                                    <div class="imgWrapper">
+                                        <img src="${question.img}" alt="知识图片">
+                                    </div>
+                                    {@/if}
+
+                                    {@if question.mode==11 || question.mode==12}
+                                    <ul class="sel">
+                                        {@each question.options as option,idx}
+                                        <li class="${idx|enNum} ${idx|checkClass ,question.answer, question.selected}"></li>
+                                        {@/each}
+                                    </ul>
+                                    {@else if question.mode==20}
+                                    <div class="imgWrapper {@if question.mode==20 && !question.img}singleImg{@/if}">
+                                        <img src="${question.upload}" alt="素描图片">
+                                    </div>
+                                    {@else}
+                                    <ul class="options">
+                                        {@each question.options as option,idx}
+                                        <li class="${idx|checkClass ,question.answer, question.selected}">
+                                            <p>${option}</p>
+                                        </li>
+                                        {@/each}
+                                    </ul>
+                                    {@/if}
+
+
+                                </li>
+                                {@/each}
+                                {@/if}
+                            </ul>
+                        </section>
+                    </div>
+
+                </div>
+                <a href="${retry}" class="btn">重新挑战</a>
+            </section>
+            <!-- /错题回顾 -->
+        </div>
+    </script> <!--错题回顾-->
+
+    <script id="tpl-profile-btn" type="text/template">
+        <a href="javascript:;" class="map_btn profile_btn">
+            <img src="${avatar}" alt="">
+        </a>
+        <div class="info">
+            <p class="name">${nickname}</p>
+            <p class="level">
+                <span class="level linear-font">lv ${grade}</span>
+                <span class="exp">${exp}/${next_exp}</span>
+            </p>
+            <div>
+                <span class="coin">${gold}</span>
+                <span class="ingot">${ingot}</span>
+            </div>
+        </div>
+    </script>
+
+    <!--插件模版--><!--插件模版-->
+
+    <!--挑战结果-->
+    <script id="tpl-result" type="text/template">
+        <!-- 挑战成功 -->
+        <div class="popup_wrapper popup-bg-${gate}">
+            <div class="cover"></div>
+            <div class="J-result plugins result">
+                <!--
+                  fail_icon：失败的图片
+                  success_icon：生工图片的
+                -->
+                <div class="${result}_icon ${result}_icon_1"></div>
+                <div class="detail">
+                    <div class="use-time {@if gate==10}fade{@/if}">通关用时:
+                        <time class="time">${minute}:${second}</time>
+                    </div>
+                    <div class="finish">
+                        <div class="gou">
+                            <p></p>
+                            <span class="zq">${ok}</span>
+                        </div>
+                        <div class="cha">
+                            <p></p>
+                            <span class="cw">${no}</span>
+                        </div>
+                    </div>
+                    <div class="get {@if gate==10}ten{@/if}">
+                        <div class="money">
+                            <p></p>
+                            <span class="get-money">金币+${ok}</span>
+                        </div>
+                        <div class="jy">
+                            <p {@if gate==10}class='star'{@/if}></p>
+                            {@if gate==10}
+                            <span class="get-layer">星值+${stars}</span>
+                            {@else}
+                            <span class="get-layer">经验+${ok}</span>
+                            {@/if}
+                        </div>
+                    </div>
+                    {@if result==='success' && isdrop}
+                    <div class="get-img">
+                        <div class="zlp">
+                            {@each drops as drop}
+                            <figure>
+                                <p class="${drop}"></p>
+                            </figure>
+                            {@/each}
+                        </div>
+                    </div>
+                    {@/if}
+                </div>
+
+                <div class="btns">
+                    <a class="btn retry">{@if result==='success'}炫耀{@else}重新挑战{@/if}</a>
+                    <a class="btn confirm">{@if gate==10}
+                        方案回顾
+                        {@else}
+                        {@if result==='success'}确定{@else}错招回看{@/if}
+                        {@/if}</a>
+                </div>
+            </div>
+        </div>
+        <!-- /挑战成功 -->
+    </script>
+
+    <!--升级-->
+    <script id="tpl-upgrade" type="text/template">
+        <div class="plugins upgrade">
+
+            {@if upgrade}
+            <p class="title"></p>
+            <p class="upgrade_img"></p>
+            <p class="word">等级提升为${upgrade}级</p>
+            {@else}
+            <p class="title get"></p>
+            <div class="chip">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <p class="p-chip">恭喜少侠集齐13个神剑碎片，合成一柄<span>“神剑”</span>，可以拿着神剑<span>线下实训</span>提高技能哦！</p>
+            {@/if}
+            <a href="javascript:;" class="btn">确定</a>
+
+        </div>
+    </script>
+
+    <!--道具-->
+    <script id="tpl-prop" type="text/template">
+        <div class="popup_wrapper">
+            <div class="cover"></div>
+            <div class="plugins menu prop center">
+                <div class="link_container">
+                    <a href="javascript:;" class="link link_chapter gold">章节道具</a>
+                    <a href="javascript:;" class="link link_gut">剧情道具</a>
+                </div>
+                <div class="prop_wrapper">
+                    <!--章节道具-->
+                    <div class="prop_chapter">
+                        <div class="prop_container">
+                            <div class="cell cell_top one ${gates.a}">
+                                <span data-a="师姐密室" data-b="拜师入门"></span>
+                                <p class="yes">密室钥匙</p>
+                            </div>
+                            <div class="cell cell_top two ${gates.b}">
+                                <span data-a="武场夺魁" data-b="师姐密室"></span>
+                                <p>武场门牌</p>
+                            </div>
+                            <div class="cell cell_top three ${gates.c}">
+                                <span data-a="妖女当道" data-b="武场夺魁"></span>
+                                <p>掌门令牌</p>
+                            </div>
+                            <div class="cell four ${gates.d}">
+                                <span data-a="误入魔洞" data-b="妖女当道"></span>
+                                <p>降魔念珠</p>
+                            </div>
+                            <div class="cell five ${gates.e}">
+                                <span data-a="燕寨艳遇" data-b="误入魔洞"></span>
+                                <p>三生腰带</p>
+                            </div>
+                            <div class="cell six ${gates.f}">
+                                <span data-a="踏访名师" data-b="燕寨艳遇"></span>
+                                <p>奇异香囊</p>
+                            </div>
+                            <div class="cell seven ${gates.g}">
+                                <span data-a="挑战名门" data-b="踏访名师"></span>
+                                <p>玉戒</p>
+                            </div>
+                            <div class="cell eight ${gates.h}">
+                                <span data-a="寻找神剑" data-b="挑战名门"></span>
+                                <p>英雄帖</p>
+                            </div>
+                            <div class="cell nine ${gates.i}">
+                                <span data-a="武林大会" data-b="寻找神剑"></span>
+                                <p>神剑</p>
+                            </div>
+                            <div class="cell ten ${gates.j}">
+                                <span data-a="武林大会" data-b="武林大会"></span>
+                                <p>盟主令牌</p>
+                            </div>
+                        </div>
+                        <div class="alert alert_one_nine">
+                            <div class="bg">
+                                <p class="open"> 开启章节“<span>师姐密室</span>”使用，通关“<span>拜师入门</span>”会掉落。</p>
+                                <p class="close">敬请期待！</p>
+                            </div>
+                        </div>
+                        <div class="alert alert_ten">
+                            <div class="bg">
+                                <p class="open">通关“<span>武林大会</span>”会掉落。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!--剧情道具-->
+                    <div class="prop_gut">
+                        <div class="alert alert_1">
+                            <div class="bg">
+                                <p class="open">通关“<span>拜师入门</span>”，燕山掌门赐予，日后定有重用！</p>
+                            </div>
+                        </div>
+                        <div class="alert alert_2">
+                            <div class="bg">
+                                <p class="open">每章节最后关卡有机会掉落，集齐之后会<br>合成“<span>神剑</span>”，会有神奇的作用。</p>
+                            </div>
+                        </div>
+                        <div class="alert alert_3">
+                            <div class="bg">
+                                <p class="open">通关每章节最后关卡有机会掉落，集齐之后合成<br>四部剑法，为本门秘籍，行走江湖，就靠它了！</p>
+                            </div>
+                        </div>
+                        <div class="alert alert_10">
+                            <div class="bg">
+                                <p style="width: 5.8rem" class="open">一柄神剑是由13块碎片合成,用来兑换线下实训课程和开启武林大会章节</p>
+                            </div>
+                        </div>
+                        <div class="prop_gut_1 on">
+                            <p>神剑剑魂</p>
+                            <span></span>
+                        </div>
+                        <span class="line"></span>
+                        <div class="prop_gut_2">
+                            <p class="title">{@if fragments == 13}神剑{@else}神剑碎片{@/if}</p>
+                            <span class="icon {@if fragments == 13}on{@/if}"></span>
+                            {@if fragments < 13}<p class="count"><span>${fragments}</span>/13</p>{@/if}
+                        </div>
+                        <span class="line"></span>
+                        <div class="prop_gut_3">
+                            <p class="title">四步剑法</p>
+                            <div class="img-container">
+                                <div class="kanren ${books.a}">
+                                    <span></span>
+                                    <p>看人剑谱</p>
+                                </div>
+                                <div class="shuoxin ${books.b}">
+                                    <span></span>
+                                    <p>说心剑谱</p>
+                                </div>
+                                <div class="shuoli ${books.c}">
+                                    <span></span>
+                                    <p>说理剑谱</p>
+                                </div>
+                                <div class="huaxing ${books.d}">
+                                    <span></span>
+                                    <p>画形剑谱</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </script>
+
+    <!--任务-->
+    <script id="tpl-task" type="text/template">
+        <div class="popup_wrapper">
+            <div class="cover"></div>
+            <div class="plugins menu task center">
+                <div class="link_container">
+                    <a href="javascript:;" data-type="current" class="link gold">当前任务</a>
+                    <a href="javascript:;" data-type="daily" class="link">每日任务</a>
+                    <!--<a href="javascript:;" data-type="union" class="link">加入星盟</a>-->
+                </div>
+                <div class="container">
+                    <div class="cell current">
+                        <p class="title">${title}</p>
+                        <div class="content">
+                            <span class="drop ${section_clz}"></span>
+                            <div class="detail">
+                                <p class="headline">${section_name}</p>
+                                <span class="line"></span>
+                                <p>${section_desc}</p>
+                            </div>
+                        </div>
+                        <a class="btn" href="${task_url}">挑战</a>
+                    </div>
+                    <div class="cell daily">
+                        <div class="content">
+                            <span class="word"></span>
+                            <span class="icon"></span>
+                        </div>
+                        {@if !daily_task}
+                        <span class="daily_status daily_condition"></span>
+                        <a class="btn off" href="javascript:;">挑战</a>
+                        {@else if daily_task.daily == 0}
+                        <a class="btn off" href="javascript:;">挑战</a>
+                        {@else}
+                        {@if daily_task.status===0}
+                        <a class="btn" href="javascript:;" data-gate="${daily_task.gate}">挑战</a>
+                        {@else}
+                        {@if daily_task.ingot>0}
+                        <span class="daily_status daily_success"></span>
+                        <a class="btn off" href="javascript:;">挑战</a>
+                        {@else if daily_task.ingot == 0}
+                        <span class="daily_status daily_fail"></span>
+                        <a class="btn off" href="javascript:;">挑战</a>
+                        {@/if}
+                        {@/if}
+                        {@/if}
+                    </div>
+                    <!--<div class="cell union">
+                        <div class="content">
+                            <span class="img"></span>
+                        </div>
+                    </div>-->
+                </div>
+            </div>
+        </div>
+
+    </script>
+
+    <!--个人中心-->
+    <script id="tpl-profile" type="text/template">
+        <div class="popup_wrapper">
+            <div class="cover"></div>
+
+            <div class="plugins menu pc center">
+                <div class="link_container">
+                    <a href="javascript:;" class="link gold">个人中心</a>
+                </div>
+                <div class="container">
+                    <div class="alert">
+                        <div class="bg">
+                            <p class="open" style="display: block">通关每章节最后关卡有机会掉落，可在<br>商城中兑换道具</p>
+                        </div>
+                    </div>
+                    <div class="info">
+                        <div class="icon">
+                            <img src="${avatar}" alt="">
+                        </div>
+                        <div class="info_content">
+                            <p>江湖称号：<i class="name">${nickname}</i><input type="text" placeholder="需六个字以内">
+                                <span class="name_btn edit"><i></i></span>
+                            </p>
+                            <p>金<span class="empty"></span>币：<span class="coin">${gold}</span></p>
+                            <p>元<span class="empty"></span>宝：<span class="ingot">${ingot}</span></p>
+                            <p>等<span class="empty"></span>级：
+                                <span class="detail {@if exp >=9996}long{@/if}">
+                                 <span class="level">Lv${grade}</span>
+                                 <span class="exp">${exp}/${next_exp}</span>
+                             </span>
+                            </p>
+                            <p>我的星盟：未加入任何星盟</p>
+                        </div>
+                    </div>
+                    <div class="title"></div>
+                    <div class="badge">
+                        <div class="badge_1">
+                            <div class="cell cell1 ${badge.a}"></div>
+                            <div class="cell cell2 ${badge.b}"></div>
+                            <div class="cell cell3 ${badge.c}"></div>
+                            <br>
+                            <div class="cell cell4 ${badge.d} cell_2_left"></div>
+                            <div class="cell cell5 ${badge.e} cell_2_right"></div>
+                            <br>
+                            <div class="cell cell6 ${badge.f}"></div>
+                            <div class="cell cell7 ${badge.g}"></div>
+                            <div class="cell cell8 ${badge.h}"></div>
+                            <br>
+                            <div class="cell cell9 ${badge.i} cell_2_left"></div>
+                            <div class="cell cell10 ${badge.j} cell_2_right"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </script>
+
+    <!--商城-->
+    <script id="tpl-store" type="text/template">
+        <div class="popup_wrapper">
+            <div class="cover"></div>
+            <div class="plugins menu center store" style="display: block;">
+                <div class="link_container">
+                    <a href="javascript:;" data-type="goods" class="link link_train gold">商品</a>
+                    <a href="javascript:;" data-type="train" class="link link_train">实训</a>
+                    <a href="javascript:;" data-type="mine" class="link link_mine">我的</a>
+                </div>
+                <div class="store_wrapper">
+                    <!--goods-->
+                    <div class="cell store_goods" style="display: block">
+                        {@if mall_list}
+                        {@each mall_list as good}
+                        {@if good.typ != 1}
+                        <div class="list_cell {@if good.typ == 2}video{@/if} {@if good.typ == 4}entity{@/if} {@if good.typ == 3}list_cell_coupon{@/if}">
+                            <div class="imgWrapper">
+                                <img src="${good.pic}" alt="icon">
+                                <span>x${good.price}</span>
+                            </div>
+                            <div class="content">
+                                <p class="title">${good.title}</p>
+                                <div>
+                                    <p class="detail">${good.content}</p>
+                                </div>
+                            </div>
+                            <div class="button">
+                                <a href="javascript:;"
+                                   {@if good.typ== 2}
+                                   data-video="${good.video}"
+                                   data-videopic="${good.video_pic}"
+                                   data-videocontent="${good.content}"
+                                   {@/if}
+                                data-price="${good.price}"
+                                data-goodid="${good._id}"
+                                data-goodtype="${good.typ}"
+                                {@if good.user_status== 1}
+                                {@if good.current_count>= good.limit}
+                                class="J-btnStore-exchange btn off">
+                                售完
+                                {@else}
+                                class="J-btnStore-exchange btn">
+                                兑换
+                                {@/if}
+                                {@else}
+                                class="J-btnStore-exchange btn off">已购买
+                                {@/if}
+                                </a>
+                                <p>数量：${good.current_count}/${good.limit}</p>
+                            </div>
+                        </div>
+                        {@/if}
+                        {@/each}
+                        {@/if}
+                    </div>
+                    <!--train-->
+                    <div class="cell store_train">
+                        {@if mall_list}
+                        {@each mall_list as good}
+                        {@if good.typ==1}
+                        <div class="list_cell">
+                            <div class="imgWrapper">
+                                <img src="${good.pic}" alt="course-icon">
+                                <span>x${good.price}</span>
+                            </div>
+                            <div class="content">
+                                <p class="title">${good.title}</p>
+                                <div>
+                                    <p class="detail">${good.content}</p>
+                                </div>
+                            </div>
+                            <div class="button">
+                                <a href="javascript:;"
+                                   data-price="${good.price}"
+                                   data-goodid="${good._id}"
+                                   data-goodtype="${good.typ}"
+                                   {@if course_typ== 1}
+                                   {@if good.current_count>= good.limit}
+                                    class="J-btnStore-exchange btn off">
+                                    已售完
+                                    {@else}
+                                    class="J-btnStore-exchange btn">
+                                    兑换
+                                    {@/if}
+                                    {@else}
+                                    class="J-btnStore-exchange btn off">已购买
+                                    {@/if}
+                                </a>
+                                <p>数量：${good.current_count}/${good.limit}</p>
+                            </div>
+                        </div>
+                        {@/if}
+                        {@/each}
+                        {@/if}
+                        <!--<div class="list_cell">
+                            <div class="imgWrapper">
+                                <img src="/static/game/img/store-list-course-icon.png" alt="course-icon">
+                                <span>x10</span>
+                            </div>
+                            <div class="content">
+                                <p class="title">线下素描实训/杭州第一期</p>
+                                <div>
+                                    <p class="detail">需从第九章中获得“神剑”方可开启。实训时间：7/7~7/10。</p>
+                                </div>
+                            </div>
+                            <div class="button">
+                                <a href="javascript:;" data-type="exchange" id="J-btnStore-exchange" class="btn">兑换</a>
+                                <p>数量：15/30</p>
+                            </div>
+                        </div>-->
+                    </div>
+                    <!--mine-->
+                    <div class="cell store_mine">
+                        {@if mine_list.length>0}
+                        {@each mine_list as mine}
+                        <div class="list_cell
+                        {@if mine.goods_info.typ == 1 }
+                        course
+                        {@else}
+                            {@if mine.goods_info.typ == 2 }
+                            video
+                            {@else}
+                                {@if mine.goods_info.typ == 3 }
+                                coupon list_cell_coupon
+                                {@else}
+                                entity
+                                {@/if}
+                            {@/if}
+                        {@/if}">
+                            <div class="imgWrapper">
+                                <img src="${mine.goods_info.pic}" alt="icon">
+                            </div>
+                            <div class="content">
+                                <p class="title">${mine.goods_info.title}</p>
+                                <div>
+                                    <p class="detail">
+                                        {@if mine.goods_info.typ == 1 }
+                                        {@if mine.mobile}
+                                        {@if mine.real_name}
+                                        ${ mine.real_name}/${ mine.mobile}
+                                        {@/if}
+                                        {@else}
+                                        请修改您的信息
+                                        {@/if}
+                                        {@else}
+                                        {@if mine.goods_info.typ == 2 }
+                                        ${mine.goods_info.content}
+                                        {@else}
+                                        {@if mine.mobile}
+                                        {@if mine.real_name}
+                                        ${mine.real_name}/${mine.mobile}
+                                        {@/if}
+                                        {@else}
+                                        请修改您的信息
+                                        {@/if}
+                                        <br>
+                                        ${mine.goods_info.contact}
+                                        ${mine.address}
+                                        {@/if}
+                                        {@/if}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="button">
+                                {@if mine.goods_info.typ== 2 }
+                                <a data-type="edit"
+                                   data-goodid="${mine._id}"
+                                   data-goodtype="${mine.goods_info.typ}"
+                                   href="javascript:;"
+                                   data-video="${mine.goods_info.video}"
+                                   data-videopic="${mine.goods_info.video_pic}"
+                                   data-videocontent="${mine.goods_info.content}"
+                                   class="J-btnStore-play btn">
+                                    播放
+                                </a>
+                                {@/if}
+                            </div>
+                        </div>
+                        {@/each}
+                        {@/if}
+                    </div>
+                </div>
+                <!--tip-->
+                <div class="tipWrapper">
+                    <div class="store_tip">
+                        <div class="title_bg">
+                            <p class="title"></p>
+                            <!--
+                            <p class="title"></p>
+                            标题为提示
+                            -->
+                        </div>
+                        <div class="cost">
+                            <p style="display: block"> 确定花费?</p>
+                            <p> 当前元宝不足,<br>需要花费</p>
+                            <p></p>
+                        </div>
+                        <div class="info" style="display: block">
+                            <div>
+                                <section>
+                                    <p class="detail">真实姓名<input maxlength="5" class="userName" type="text"/></p>
+                                </section>
+                                <section>
+                                    <p class="detail">
+                                        手机号码<input class="userPhone" type="number"/>
+                                        <a href="javascript:;" id="J-btnStore-count" class="count">获取验证码</a>
+                                    </p>
+                                </section>
+                                <section>
+                                    <p class="detail"><span>验证码</span><input class="idCode" type="text"/></p>
+                                </section>
+                                <section>
+                                    <p class="detail">邮寄地址<input class="address" type="text"/></p>
+                                </section>
+                                <p class="tip"></p>
+                            </div>
+                        </div>
+                        <div class="btns_bg">
+                            <div class="btns">
+                                <a href="javascript:;" id="J-btnStore-cancel" class="btn">取消</a>
+                                <a href="javascript:;" id="J-btnStore-confirm" class="btn">确定</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script id="tpl-store-video" type="text/template">
+        <div class="plugins store-video">
+            <div class="video-wrapper">
+                <video class="video-js vjs-default-skin" webkit-playsinline autoplay="autoplay"
+                       controls
+                       preload="auto"
+                       poster="${url_pic}">
+                    <source src="${url_video}" type='video/mp4'/>
+                </video>
+            </div>
+            <div class="world-wrapper">
+                <p>${video_content}</p>
+            </div>
+            <a href="javascript:;" class="btn">关闭</a>
+        </div>
+    </script>
+    <!--宝箱弹窗-->
+    <script id="tpl-section" type="text/template">
+        <div class="popup_wrapper">
+            <div class="cover"></div>
+
+            <div class="plugins tollGate center">
+
+                <p class="tollGate_title tollGate_title_${section}"></p>
+
+                <div class="tollGate_wrapper">
+                    <div class="left">
+                        <div class="dhk"><p>${text}</p></div>
+                        <div class="dropProp">
+                            <span class="dropProp_icon"></span>
+                            <div class="wrapper">
+                                <span class="cell ${key}"></span>
+                                <span class="cell ${prop}"></span>
+                            </div>
+                        </div>
+                        <div class="tollGate_obj ${section_clz}"></div>
+                    </div>
+                    <a class="intro" href="${video}">
+                        <p class="practice {@if section=='boss'}exam{@/if} "></p>
+                    </a>
+                    <p class="guide">
+
+                        {@if is_boss==0}
+                        仔细研究<span class="red">秘籍</span><span class="triangle"></span>
+                        {@else}
+                        认真听取<span class="red">师姐教诲</span><span class="triangle"></span>
+                        {@/if}
+                        勤加练习找到
+                        <span class="red">${word_prop}</span><span class="triangle"></span>
+                        <span class="red">${word_goal}</span>
+                    </p>
+                    <div class="btnWrapper btns">
+                        <a id="J-find" href="#answer/test/${section}/first" class="btn btn_long">${find_title}</a>
+                        <a id="J-open" href="#answer/exam/${section}" class="btn btn_long  ${open_btn}"
+                           data-auth="${open_auth}">${open_title}</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </script>
+
+    <!--宝箱开启弹窗-->
+    <script id="tpl-section-open" type="text/template">
+        <div class="plugins chestOpen_alert center">
+            <div class="chestOpen_alert_bg">
+                <p>
+                    {@if auth=='off'}
+                    您的金币不足,请勤加练习获得更多金币!
+                    {@else}
+                    “${open_title}”需要花费${money}金币
+                    {@/if}
+                </p>
+            </div>
+            <div class="btnWrapper">
+                <a href="javascript:;" class="btn return">返回</a>
+                <a href="javascript:;" class="btn confirm ${auth}">确定</a>
+            </div>
+        </div>
+    </script>
+
+    <!--获得徽章-->
+    <script id="tpl-badge" type="text/template">
+        <div class="popup_wrapper ${bgimg}">
+            <div class="cover"></div>
+            <div class="plugins getBadge center">
+                <span class="${gate}"></span>
+                <!--
+                    <span class="one"></span>
+                    <span class="two"></span>
+                    <span class="three"></span>
+                    <span class="four"></span>
+                    <span class="five"></span>
+                    <span class="six"></span>
+                    <span class="seven"></span>
+                    <span class="eight"></span>
+                    <span class="nine"></span>
+                    <span class="ten"></span>
+                -->
+                <p>获得的徽章点击个人头像可查看</p>
+                <a class="btn" href="javascript:;">确定</a>
+            </div>
+        </div>
+    </script>
+
+    <!--tip-->
+    <script type="text/template" id="tpl-tip">
+        <div class="popup_wrapper">
+            <div class="cover"></div>
+            <!--tip-->
+            <div class="plugins center tip">
+                <div class="wrapper">
+                    <span class="{@if status == 0}{@if gate == 10}unfinish-all{@else}unfinished{@/if}{@else if status==1}finished{@else}auth{@/if}"></span>
+                    <div class="btnsWrapper">
+                        <div class="btns">
+                            <a href="javascript:;" class="btn">确定</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <!--loading-->
+    <script type="text/template" id="tpl-loading">
+        <div class="popup_wrapper">
+            <div class="cover"></div>
+            <!--tip-->
+            <div class="plugins center tip">
+                <div class="wrapper" style="width: 1.35rem;height: 1.43rem;background: none">
+                    <span class="loading-gif"></span>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <!--音乐按钮-->
+    <script id="tpl-music" type="text/template">
+        <a href="javascript:;" class="music_btn"></a>
+    </script>
+
+    <!--正式版购买按钮-->
+    <script id="tpl-pay" type="text/template">
+        <a class='map_btn pay_btn' href='javascript:;'></a>
+    </script>
+    <!--    &lt;!&ndash; 返回事件的弹窗&ndash;&gt;
+        <script id="tpl-close-tip" type="text/template">
+            <div class="close-tip hide"><span></span></div>
+        </script>-->
+
+    <!--我的方案  列表-->
+    <script id="tpl-plan-list" type="text/template">
+        <div class="popup_wrapper">
+            <div class="cover"></div>
+            <div class="plugins plan center" style="display: block">
+                <div class="step_1">
+                    <div class="plan_title">
+                        <p>关口</p>
+                        <p>星值</p>
+                        <p>方案</p>
+                    </div>
+                    <section>
+                        {@each design_list as de}
+                        <div>
+                            <p>${de.title}</p>
+                            <p>
+                                {@if de.star == 1}
+                                <span class="on"></span><span></span><span></span>
+                                {@else if de.star == 2}
+                                <span class="on"></span><span class="on"></span><span></span>
+                                {@else if de.star == 3}
+                                <span class="on"></span><span class="on"></span><span class="on"></span>
+                                {@else}
+                                <span></span><span></span><span></span>
+                                {@/if}
+
+                            </p>
+                            <p>
+                                {@if de.status==0}
+                                <a href="javascript:;" class="btn ing" data-did="${de.design_id}"></a>
+                                {@else}
+                                <a href="javascript:;" class="btn" data-did="${de.design_id}"></a>
+                                {@/if}
+                            </p>
+                        </div>
+                        {@/each}
+
+                    </section>
+                </div>
+            </div>
+        </div>
+    </script>
+    <!--我的方案 详情-->
+    <script id="tpl-plan-detail" type="text/template">
+        <div class="step_2">
+            <div class="idea-wrapper">
+                <div>
+                    <section>
+                        <img src="${design.face}" alt="">
+                    </section>
+                    <p>用户正面照</p>
+                </div>
+                <div>
+                    <section>
+                        <img src="${design.img}" alt="">
+                    </section>
+                    <p>发型效果素描图</p>
+                </div>
+            </div>
+            <div class="plan_word plan_word_1">
+                <p>设计风格: </p>
+                <p> ${design.style}</p>
+            </div>
+            <div class="plan_word plan_word_2">
+                <p>设计思路: </p>
+                <p> ${design.remark}</p>
+            </div>
+            <div class="plan_word pass_or_not">
+                <p>{@if design.status == 0}未通过{@else}已通过{@/if}: </p>
+                <p> ${design.comment}</p>
+            </div>
+            <div class="plan_star_wrapper">
+                <section>
+                    {@if design.star == 1}
+                    <span class="on"></span><span></span><span></span>
+                    {@else if design.star == 2}
+                    <span class="on"></span><span class="on"></span><span></span>
+                    {@else if design.star == 3}
+                    <span class="on"></span><span class="on"></span><span class="on"></span>
+                    {@else}
+                    <span></span><span></span><span></span>
+                    {@/if}
+                </section>
+            </div>
+            <a href="javascript:;" class='btn'>返回</a>
+        </div>
+    </script>
+
+    <!--排行榜-->
+    <script id="tpl-pk" type="text/template">
+        <div class="popup_wrapper">
+            <div class="cover"></div>
+            <div class="plugins menu pk center">
+                <p class="pk_title"></p>
+                <div class="pk_wrapper">
+                    <div class="cell title">
+                        <section>序号</section>
+                        <section>头像</section>
+                        <section>江湖称号/等级</section>
+                        <section>设计能力星值</section>
+                    </div>
+                    <div class="wrapper">
+                        {@each packages as pa}
+                        <div class="cell">
+                            <div class="inner_wrapper">
+                                <section class="no_${pa.idx}"></section>
+                                <section><i><img src="${pa.avatar}" alt=""></i></section>
+                                <section>
+                                    <p>${pa.nickname} <br>Lv ${pa.grade}</p>
+                                </section>
+                                <section>
+                                    <p> ${pa.stars}</p>
+                                </section>
+                            </div>
+                        </div>
+                        {@/each}
+                    </div>
+
+                    <div class="cell mine">
+                        <div class="inner_wrapper">
+                            <section class="no_${pack.staridx}">
+                                {@if pack.stars == 0}
+                                <span>无</span>
+                                {@else}
+                                <span>${pack.staridx}</span>
+                                {@/if}
+                            </section>
+                            <section><i><img src="${pack.avatar}" alt=""></i></section>
+                            <section>
+                                <p>${pack.nickname} <br>Lv ${pack.grade}</p>
+                            </section>
+                            <section>
+                                <p>${pack.stars}</p>
+                            </section>
+                        </div>
+                    </div>
+                    <p class="info">进入第十章参与排行,根据每个人方案质量得分排名.</p>
+                </div>
+            </div>
+        </div>
+    </script>
+    {% block base_tpl %}{% end %}
+
+</head>
+<body>
+<audio id="music" loop preload="auto">
+    <source type="audio/mpeg">
+</audio>
+
+{% block body %}{% end %}
+
+
+<!--第三方js-->
+{% module Template("module/js.html", filepath='game/js/fitRem.js') %}
+{% module Template("module/js.html", filepath='game/js/jquery-3.0.0.min.js') %}
+{% module Template("module/js.html", filepath='game/js/sammy-latest.min.js') %}
+{% module Template("module/js.html", filepath='game/js/juicer-min.js') %}
+{% module Template("module/js.html", filepath='game/js/game.js') %}
+{% module Template("module/js.html", filepath='game/js/my-sammy-plugins.js') %}
+{% module Template("module/js.html", filepath='game/js/refresh-title.js') %}
+{% module Template("module/js.html", filepath='game/js/refresh-title.js') %}
+{% module Template("module/js.html", filepath='game/js/base64.js') %}
+<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script>
+    var wxparam = {
+        debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        appId: '{{wxjs.appid}}', // 必填，公众号的唯一标识
+        timestamp: "{{wxjs.timestamp}}", // 必填，生成签名的时间戳
+        nonceStr: '{{wxjs.noncestr}}', // 必填，生成签名的随机串
+        signature: '{{wxjs.signature}}',// 必填，签名，见附录1
+        jsApiList: [
+            'checkJsApi',
+            'onMenuShareAppMessage',
+            'onMenuShareTimeline',
+            'chooseImage',
+            'previewImage',
+            'uploadImage',
+            'downloadImage'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+    };
+
+    wx.config(wxparam);
+
+    wx.ready(function () {
+        wx.checkJsApi({
+            jsApiList: ['checkJsApi', 'onMenuShareAppMessage', 'onMenuShareTimeline'], // 需要检测的JS接口列表，所有JS接口列表见附录2,
+            success: function (res) {
+//                alert(JSON.stringify(res));
+                // 以键值对的形式返回，可用的api值true，不可用为false
+                // 如：{"checkResult":{"chooseImage":true},"errMsg":"checkJsApi:ok"}
+            }
+        });
+
+        //分享给朋友
+        wx.onMenuShareAppMessage({
+            title: $('title').html(), // 分享标题
+            desc: "学会私人定制，成为一位真正的美发师！", // 分享描述
+            link: "{{gconf['domain']}}/partner/list", // 分享链接
+            imgUrl: "{{gconf['domain']}}/static/img/share.jpg", // 分享图标
+            type: 'link', // 分享类型,music、video或link，不填默认为link
+            dataUrl: "", // 如果type是music或video，则要提供数据链接，默认为空
+            success: function () {
+                // 用户确认分享后执行的回调函数
+                //$.diyAlert("分享成功！");
+            },
+            cancel: function () {
+                // 用户取消分享后执行的回调函数
+                //alert("用户取消分享！");
+            }
+        });
+
+        //分享到朋友圈
+        wx.onMenuShareTimeline({
+            title: '学会私人定制，掌握未来趋势！', // 分享标题
+            desc: " 学会私人定制，掌握未来趋势！", // 分享描述
+            link: "{{gconf['domain']}}/partner/list", // 分享链接
+            imgUrl: "{{gconf['domain']}}/static/img/share.jpg", // 分享图标
+
+            success: function () {
+                // 用户确认分享后执行的回调函数
+                //$.diyAlert("分享到朋友圈成功！");
+            },
+            cancel: function () {
+                // 用户取消分享后执行的回调函数
+            }
+        });
+    });
+
+    wx.error(function (res) {
+        // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
+//        alert(location.href.split('#')[0])
+    });
+
+</script>
+<script>
+
+    juicer.register('numberPlus', function (number) {
+        return parseInt(number) + 1;
+    });
+
+    juicer.register('letter', function (number) {
+        var alphabet = ['A', 'B', 'C', 'D', 'E'];
+
+        return alphabet[parseInt(number)];
+    });
+
+    juicer.register('enNum', function (number) {
+        return enNums[parseInt(number)];
+    });
+
+    juicer.register('questionMode', function (mode, img) {
+        if (mode == 11) {
+            return 'issue_2'
+        } else if (mode == 12) {
+            return 'issue_3'
+        } else if (mode == 20) {
+            return 'issue_4'
+        } else {
+            if (img != '') {
+                return 'issue_1'
+            }
+        }
+
+        return ''
+    });
+
+    juicer.register('checkClass', function (index, answer, selected) {
+        var clazz = [];
+
+        if (answer.length > 1) {
+            if (answer.indexOf(selected) >= 0) {
+                if ((selected - 1) == index) {
+                    clazz.push('bingo');
+                }
+            }
+        } else if (parseInt(answer) == parseInt(index) + 1) {
+            clazz.push('bingo');
+        }
+
+
+        if (parseInt(selected) == parseInt(index) + 1) {
+            clazz.push('check');
+            if (answer != selected) {
+                clazz.push('wrong');
+            }
+        }
+
+
+        if (clazz.indexOf('bingo') > -1 && clazz.indexOf('wrong') > -1) {
+            var index = clazz.indexOf('wrong');
+            clazz.splice(index, 1)
+        }
+
+        return clazz.join(' ');
+    });
+
+    juicer.register('checkClassSix', function (index, answer, selected) {
+        var clazz = [];
+        if (parseInt(selected) == parseInt(index) + 1) {
+            clazz.push('check');
+            if (answer != selected) {
+                clazz.push('wrong');
+            }
+        }
+
+        if (parseInt(answer) == parseInt(index) + 1) {
+            clazz.push('bingo');
+        }
+
+        return clazz.join(' ');
+    });
+</script>
+
+{% block base_js %}{% end %}
+
+<script type="text/javascript" src="http://pingjs.qq.com/h5/stats.js" name="MTAH5" sid="500322802" cid="500322850"
+        opts="{&quot;senseHash&quot;:false}"></script>
+</body>
+</html>

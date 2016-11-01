@@ -1,0 +1,100 @@
+{% extends "../layout/mbase.html" %}
+
+{% block css %}{% end %}
+
+{% block js %}
+<script>
+    $(function () {
+        $('.partnersearch').click(function () {
+            var keyword = $.trim($('.partnerkeyword').val());
+            if (keyword != '') {
+                var data = {'keyword': keyword};
+                $.post('/m/partner/searchlist', data, function (res) {
+                    $('#searchcontent').empty();
+                    $('#searchcontent').html(res);
+                }, 'html');
+            } else {
+                alert('搜索框为空，请先填写，再搜索');
+                return;
+            }
+        });
+    });
+
+
+</script>
+
+
+{% end %}
+
+{% block nav %}
+{% module Template("module/backnav.html", name='partner') %}
+{% end %}
+
+
+{% block container%}
+
+
+<div class="container">
+    <a href="/m/partner/add" class="btn btn-primary pull-right btn-sm layout-mt20">添加</a>
+
+    <h3>合作商
+        <small>列表</small>
+    </h3>
+    <hr/>
+
+    <div class="row">
+        <div class="col-xs-3">
+            <div class="input-group layout-mt20">
+                <input type="text" class="form-control partnerkeyword" placeholder="输入名称搜索">
+                <span class="input-group-btn"> <a class="btn btn-default partnersearch"> 搜索 </a> </span>
+            </div>
+            <div class="list-group layout-mt20">
+                <a href="/m/partner/list/0" {%if querycondition== 0 %} class="list-group-item active" {%else%}
+                   class="list-group-item" {%end%}>已合作</a>
+                <a href="/m/partner/list/1" {%if querycondition== 1 %} class="list-group-item active" {%else%}
+                   class="list-group-item" {%end%}>已取消合作</a>
+            </div>
+        </div>
+
+        <div class="col-xs-9" id="searchcontent">
+            <table class="table table-hover layout-mt20">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>名称</th>
+                    <th>状态</th>
+                    <th>收益</th>
+                    <th>已提现金额</th>
+                    <th>未提现金额</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {%for partner in partnerList%}
+                <tr>
+                    <td>{{partner['id']}}</td>
+                    <td>{{partner['nick_name']}}</td>
+                    {%if partner['partner_id']==0%}
+                    <td>代理商</td>
+                    {%else%}
+                    <td>团队</td>
+                    {%end%}
+                    <td>{{partner['amount']}}</td>
+                    <td>{{partner['had_withdraw']}}</td>
+                    <td>{{partner['not_withdraw'] if partner['not_withdraw'] else '0.00'}}</td>
+                    <td align="right">
+                        <a href="/m/partner/edit/{{partner['id']}}" class="btn btn-primary btn-sm">查看</a>
+                    </td>
+                </tr>
+                {%end%}
+
+                </tbody>
+            </table>
+
+            {% module Template("module/bspager.html",
+            pager=pager,url="/m/partner/list/"+str(querycondition)+"?pagenum=:page:") %}
+
+        </div>
+    </div>
+</div>
+{% end %}

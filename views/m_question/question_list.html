@@ -1,0 +1,116 @@
+{% extends "../layout/mbase.html" %}
+
+{% block css %}{% end %}
+
+{% block js %}
+<script>
+ $(function () {
+     $('.removeQues').click(function () {
+         if (confirm("确认删除吗?")) {
+             $.post('/m/question/del/' + $(this).data('qid'), function (res) {
+                         if (res.status == 1) {
+                             window.location.reload();
+                         }
+                     }, 'json'
+             );
+         }
+
+     });
+ });
+
+
+</script>
+
+{% end %}
+
+{% block nav %}
+{% module Template("module/backnav.html", name='question') %}
+{% end %}
+
+{% block container%}
+
+
+<div class="container">
+    <a href="/m/question/add" class="btn btn-primary pull-right btn-sm layout-mt20">添加</a>
+
+    <h3>题库管理
+    </h3>
+    <hr/>
+    <div class="row">
+        <div class="col-xs-3">
+            <div class="list-group layout-mt20">
+                <a href="/m/question/listbycondition/0" {%if querycondition[0]==0%} class="list-group-item active" {%else%} class="list-group-item" {%end%}>全部</a>
+                {%for i in range(10)%}
+                <a href="/m/question/listbycondition/{{i+1}}" {%if querycondition[0]==(i+1)%} class="list-group-item active" {%else%} class="list-group-item" {%end%}>{{gateName(i+1)}}</a>
+                {%end%}
+                <a href="/m/question/listbycondition/11" {%if querycondition[0]==11%} class="list-group-item active" {%else%} class="list-group-item" {%end%}>应用题</a>
+                <a href="/m/question/listbycondition/12" {%if querycondition[0]==12%} class="list-group-item active" {%else%} class="list-group-item" {%end%}>普通选择题</a>
+            </div>
+        </div>
+
+        <div class="col-xs-9">
+            <table class="table table-hover layout-mt20">
+                <thead>
+                <tr>
+                    <th width="120px">题目类型</th>
+                    <th width="60px">章节</th>
+                    <th width="60px">关口</th>
+                    {%if querycondition[0]==10%}
+                    <th style="text-align: center">素材编码</th>
+                    {%else%}
+                    <th style="text-align: center">题目</th>
+                    {%end%}
+                    <th width="60px">图片</th>
+                    <th align="right">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for result in resultList %}
+                <tr>
+                    {%if result['type']==1%}
+                    <td>应用题</td>
+                    {%elif result['type']==2%}
+                    <td>普通选择题</td>
+                    {%elif result['type']==3%}
+                    <td>发型风格题</td>
+                    {%elif result['type']==4%}
+                    <td>风格打造题</td>
+                    {%elif result['type']==10%}
+                    <td>剪发需求题</td>
+                    {%end%}
+                    {%if querycondition[0] in [1,2,3,4,5,6,7,8,9,10]%}
+                    <td>{{gateName(querycondition[0])}}</td>
+                    {%end%}
+                    <td style="text-align: center">{{result['section']}}</td>
+                    {%if querycondition[0]==10%}
+                     <td style="text-align: center">{{result['_id']}}</td>
+                    {%else%}
+                     <td>{{result['title']}}</td>
+                    {%end%}
+
+
+                    {%if result['imgUrl']%}
+                    <td><img src="{{upfile(result['imgUrl'])}}" width="80" alt=""></td>
+                    {%elif result['face']%}
+                    <td><img src="{{upfile(result['face'])}}" width="80" alt=""></td>
+                    {%else%}
+                    <td></td>
+                    {%end%}
+                    <td width="150" align="right">
+                        <a href="/m/question/listone/{{result['_id']}}?pagenum={{pager['pagenum']}}" class="btn btn-primary btn-sm">查看</a>
+                        <a href="#" data-qid="{{result['_id']}}"  class="btn btn-primary btn-sm removeQues">删除</a>
+                    </td>
+                </tr>
+                {%end%}
+                </tbody>
+            </table>
+            {% module Template("module/bspager.html", pager=pager,url="/m/question/listbycondition/"+str(querycondition[0])+"?pagenum=:page:") %}
+
+        </div>
+    </div>
+
+
+</div>
+
+
+{% end %}

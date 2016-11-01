@@ -1,0 +1,39 @@
+
+             <table class="table table-hover layout-mt20">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>头像</th>
+                    <th>微信昵称</th>
+                    <th>游戏昵称</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {%for user in userList%}
+                <tr>
+                    <td>{{7000000+user.id}}</td>
+                    <td><img src="{{user.headimgurl}}" width="100" alt=""></td>
+                    <td>{{user.user_name}}</td>
+                    <td>{{user.nick_name}}</td>
+                    <td>
+                        {%if user.cert_status == 1 %}
+                        申请中
+                        {%elif user.cert_status == 2%}
+                        已认证
+                        {%elif user.cert_status == 3%}
+                        未通过
+                        {%else%}
+                        未认证
+                        {%end%}
+                    </td>
+                    <td align="right">
+                        <a href="/m/user/edit/{{user.id}}" class="btn btn-primary btn-sm">查看</a>
+                    </td>
+                </tr>
+                {%end%}
+
+                </tbody>
+            </table>
+            {% module Template("module/bspager.html", pager=pager,url="/m/user/searchlist?pagenum=:page:") %}

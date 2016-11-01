@@ -1,0 +1,9 @@
+<div class="right">
+    <h5>热门小组... ...<a href="/group/f/">更多</a></h5>
+    <ul class="groups clearfix">
+        {%for g in hot_groups%}
+        <li><a href="/group/{{g}}"><img src="{{g|avatar('group',80)}}" class="c_r3"/></a></li>
+        {%endfor%}
+    </ul>
+    <a class="create-group" href="/create/group">&gt;&gt;&nbsp;创建小组</a>
+</div>

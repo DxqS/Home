@@ -1,0 +1,37 @@
+<table class="table table-bordered text-center layout-mt10">
+    <tr>
+        <td>联运方名称</td>
+        <td>试玩宝描打开量</td>
+        <td>未支付试玩订单</td>
+        <td>已支付试玩订单</td>
+        <td>试玩订单销售额</td>
+        <td>试玩转正式订单量</td>
+        <td>转正式销售额</td>
+        <td>试玩购买率</td>
+        <td>正版转化率</td>
+    </tr>
+    <tr>
+        <td>总计</td>
+        <td>{{amount[0]}}</td>
+        <td>{{amount[1]}}</td>
+        <td>{{amount[2]}}</td>
+        <td>{{amount[3]}}</td>
+        <td>{{amount[4]}}</td>
+        <td>{{amount[5]}}</td>
+        <td>{{amount[6]*100}}%</td>
+        <td>{{amount[7]*100}}%</td>
+    </tr>
+    {%for data in data_list%}
+    <tr>
+        <td>{{data[0]}}</td>
+        <td>{{data[1]}}</td>
+        <td>{{data[2]}}</td>
+        <td>{{data[3]}}</td>
+        <td>{{data[4]}}</td>
+        <td>{{data[5]}}</td>
+        <td>{{data[6]}}</td>
+        <td>{{data[7]*100}}%</td>
+        <td>{{data[8]*100}}%</td>
+    </tr>
+    {%end%}
+</table>

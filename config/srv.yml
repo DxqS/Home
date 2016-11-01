@@ -1,0 +1,106 @@
+local:
+  rabbit:
+    host: dev.yanzijia.cn
+    port: 5672
+    user: yanzijia
+    pwd: yzjpwd123
+
+  redis:
+    host: dev.yanzijia.cn
+    port: 6379
+    db: 5
+    password: yzjpwd123
+
+  mongo:
+    host: dev.yanzijia.cn
+    port: 27017
+    db: yanshan_test
+    uname: yanzi
+    pwd: yanzi2016
+
+  log:
+    access.log: /var/log/gunicorn/yanshan_access.log
+    error.log: /var/log/gunicorn/yanshan_error.log
+    tornado.log: /var/log/tornado/yanshan.log
+    stdout: /var/log/upstart/runsvdir.log
+
+
+develop:
+  rabbit:
+    host: dev.yanzijia.cn
+    port: 5672
+    user: yanzijia
+    pwd: yzjpwd123
+
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    db: 5
+    password: yzjpwd123
+
+  mongo:
+    host: dev.yanzijia.cn
+    port: 27017
+    db: yanshan_test
+    uname: yanzi
+    pwd: yanzi2016
+
+  log:
+    access.log: /var/log/gunicorn/yanshan_access.log
+    error.log: /var/log/gunicorn/yanshan_error.log
+    tornado.log: /var/log/tornado/yanshan.log
+    stdout: /var/log/upstart/runsvdir.log
+
+
+test:
+  rabbit:
+    host: dev.yanzijia.cn
+    port: 5672
+    user: yanzijia
+    pwd: yzjpwd123
+
+  redis:
+    host: dev.yanzijia.cn
+    port: 6379
+    db: 6
+    password: yzjpwd123
+
+  mongo:
+    host: dev.yanzijia.cn
+    port: 27017
+    db: yanshan_test
+    uname: yanzi
+    pwd: yanzi2016
+
+  log:
+    access.log: /var/log/gunicorn/yanshan_access.log
+    error.log: /var/log/gunicorn/yanshan_error.log
+    tornado.log: /var/log/tornado/yanshan.log
+    stdout: /var/log/upstart/runsvdir.log
+
+
+release:
+  rabbit:
+    host: 127.0.0.1
+    port: 5672
+    user: yanzijia
+    pwd: yzjapp123
+
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    db: 2
+    password: sw:redis:app:pwd
+
+  mongo:
+    host: 10.24.38.164
+    port: 27017
+    db: yanshanzb
+    uname: yanzi
+    pwd: yanzi2016
+
+  log:
+    access.log: /var/log/gunicorn/yanshan_access.log
+    error.log: /var/log/gunicorn/yanshan_error.log
+    tornado.log: /var/log/tornado/yanshan.log
+    stdout: /var/log/upstart/runsvdir.log

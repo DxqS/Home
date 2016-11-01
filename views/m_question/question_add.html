@@ -1,0 +1,879 @@
+{% extends "../layout/mbase.html" %}
+
+{% block css %}{% end %}
+
+{% block js %}
+
+
+{% module Template("module/js.html", filepath='zui/upyun/spark-md5.min.js') %}
+{% module Template("module/js.html", filepath='zui/upyun/async.min.js') %}
+{% module Template("module/js.html", filepath='zui/upyun/upyun-mu.js') %}
+
+<script>
+    $(function () {
+        $("input[name='J-question-type']").change(function () {
+            var qtyp = $("input[name='J-question-type']:checked").val();
+            $('#J-title').hide();
+            $('#J-normal').hide();
+            $('#J-application').hide();
+            $('#J-style').hide();
+            $('#J-hair').hide();
+            $('#J-title-pic').show();
+            if (qtyp == '1') {
+                $('#J-application').show();
+            } else if (qtyp == '2') {
+                $('#J-title').show();
+                $('#J-normal').show();
+            } else if (qtyp == '3') {
+                $('#J-style').show();
+            } else if (qtyp == '4') {
+                $('#J-style').show();
+            } else if (qtyp == '10') {
+                $('#J-title-pic').hide();
+                $('#J-hair').show()
+            }
+        });
+    });
+    //自定义一个函数验证表单
+    $validatorForm = {
+        validatorInput: function () {
+            if ($("#gate_id").val() == '') {
+                return false;
+            }
+
+            if ($("#section_id").val() == '') {
+                return false;
+            }
+
+            var qtyp = $("input[name='J-question-type']:checked").val();
+            if (qtyp == '1') {
+                var trueOrF = true;
+                $('#J-application').find('select').each(function () {
+                    var selectedVal = $(this).val();
+                    if (selectedVal == '0') {
+                        trueOrF = false;
+                    }
+                });
+                return trueOrF;
+
+            } else if (qtyp == '2') {//普通应用题
+                var title = $.trim($("#J-title-inp").val());
+                var choice_a = $.trim($("#choice_a").val());
+                var choice_b = $.trim($("#choice_b").val());
+                var choice_c = $.trim($("#choice_c").val());
+                var right_answer = $("input[name='right_answer']:checked").val();
+                if (title == '' || choice_a == '' || choice_b == '' || right_answer == undefined) {
+                    return false;
+                }
+            } else if (qtyp == '10') {
+                var trueOrFF = true;
+                $('#J-hair').find('select').each(function () {
+                    var selectedVal = $(this).val();
+                    if (selectedVal == '0') {
+                        trueOrFF = false;
+                    }
+                });
+                return trueOrFF;
+            }
+            return true;
+        }
+
+    };
+
+    $(function () {
+        $('#addButton').click(function () {
+            var isTrue = $validatorForm.validatorInput();
+            if (isTrue) {
+                var data = $.formUtils.formData($(this).parent('form'));
+                console.log(data);
+                $.post('/m/question/add', data, function (res) {
+                    if (res.status == 1) {
+                        window.location.href = '/m/question/listbycondition/0'
+                    }
+                }, 'json');
+            } else {
+                alert('带*的必须填写或选择');
+            }
+
+
+        });
+    });
+
+    //上传logo或者照片
+    $(function () {
+        var upconfig = {
+            bucket: '{{gconf["up_file_bucket"]}}',
+            expiration: parseInt((new Date().getTime() + 3600000) / 1000),
+            // 尽量不要使用直接传表单 API 的方式，以防泄露造成安全隐患
+            form_api_secret: '{{gconf["up_file_secret"]}}'
+        };
+
+
+        $('.btn-default').click(function () {
+            if ($(this).html() == "上传") {
+                $(this).html("上传中...");
+                $('#file').click();
+            }
+
+            return false;
+        });
+
+        $('#file').change(function () {
+            var ext = '.' + document.getElementById('file').files[0].name.split('.').pop();
+            var instance = new Sand(upconfig);
+            var options = {
+                'notify_url': 'http://upyun.com'
+            };
+
+            instance.setOptions(options);
+            instance.upload('/upload/test/' + parseInt((new Date().getTime() + 3600000) / 1000) + ext);
+        });
+
+        document.addEventListener('uploaded', function (e) {
+            var data = e.detail;
+            var path = "http://{{gconf['up_file_bucket']}}.b0.upaiyun.com" + data["path"];
+            var upload_id = $(e.path[0].activeElement).attr('id');
+            console.log(path);
+
+            $(e.path[0].activeElement).html("上传").removeAttr("disabled");
+            var img = $(e.path[0].activeElement).prev('img');
+            img.attr('src', path);
+            $('#J-' + upload_id + '-hid').val(path);
+
+        });
+
+    });
+
+    //自动锁定曲中直
+    $(function () {
+        $('#section_id').change(function () {
+            var ss = ['one', 'two', 'three', 'four', 'five', 'six', 'boss'];
+            var tt = ss.indexOf($(this).val()) + 1;
+            var keyval = {
+                1: '甜美可爱', 2: '魅力时尚', 3: '清纯简洁',
+                4: '自然优雅', 5: '高雅柔美', 6: '知性沉着',
+                7: '浪漫迷人', 8: '华丽高雅', 9: '现代摩登'
+            };
+            if (tt <= 3) {
+                $("p[name='copy1_style']").html(keyval[4 - tt]);
+                $("p[name='copy2_style']").html(keyval[7 - tt]);
+                $("p[name='copy3_style']").html(keyval[10 - tt]);
+            } else {
+                $("p[name='copy1_style']").html('无');
+                $("p[name='copy2_style']").html('无');
+                $("p[name='copy3_style']").html('无');
+            }
+        })
+    })
+</script>
+
+{% end %}
+
+{% block nav %}
+{% module Template("module/backnav.html", name='question') %}
+{% end %}
+
+{% block container%}
+
+
+<div class="container">
+
+    <div class="container">
+        <a href="javascript:history.back()" class="btn btn-primary pull-right btn-sm layout-mt20">返回</a>
+
+        <h3>题库
+            <small>管理</small>
+        </h3>
+        <hr/>
+        <div>
+
+            <div class="row">
+
+                <div class="col-xs-9">
+                    <h4>添加习题</h4>
+                    <hr/>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <form class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="control-label col-xs-2">章节：</label>
+                                    <div class="col-xs-5">
+                                        <select name="gate" id="gate_id" class="form-control">
+                                            <option value="">未选择</option>
+                                            {%for i in range(10)%}
+                                            <option value="{{i+1}}">第{{i+1}}章</option>
+                                            {%end%}
+                                        </select>
+                                    </div>
+
+                                    <span style="color: red">*</span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-2">关口：</label>
+                                    <div class="col-xs-5">
+                                        <select name="section" id="section_id" class="form-control">
+                                            <option value="">未选择</option>
+                                            <option value="one">1</option>
+                                            <option value="two">2</option>
+                                            <option value="three">3</option>
+                                            <option value="four">4</option>
+                                            <option value="five">5</option>
+                                            <option value="six">6</option>
+                                            <option value="boss">boss</option>
+                                        </select>
+                                    </div>
+
+                                    <span style="color: red">*</span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-2">题型：</label>
+                                    <div class="col-xs-5">
+                                        <label class="radio-inline">
+                                            <input type="radio" name="J-question-type" checked="checked"
+                                                   value="2"> 普通选择题
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="J-question-type"
+                                                   value="1"> 应用题
+                                        </label>
+                                        <br>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="J-question-type"
+                                                   value="3"> 发型风格题
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="J-question-type"
+                                                   value="4"> 风格打造题
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="J-question-type"
+                                                   value="10"> 剪发需求题
+                                        </label>
+                                    </div>
+
+                                    <span style="color: red">*</span>
+                                </div>
+
+                                <div class="form-group" id="J-title">
+                                    <label class="control-label col-xs-2">题目：</label>
+                                    <div class="col-xs-5">
+                                        <input type="text" name="title" id="J-title-inp" class="form-control">
+                                    </div>
+
+                                    <span style="color: red">*</span>
+                                </div>
+
+                                <div class="form-group" id="J-title-pic">
+                                    <label class="control-label col-xs-2">题目图片：</label>
+                                    <div class="col-xs-5">
+                                        <input type="file" id="file" style="display: none">
+                                        <input type="hidden" name="title_pic" id="J-title_pic-hid">
+                                        <img src="" alt="" width="80" height="80"/>
+                                        <a href="#" id="title_pic" class="btn btn-default">上传</a>
+                                    </div>
+
+                                    <div class="help-block">图片格式：jpg，尺寸：00x00</div>
+                                </div>
+
+                                <hr/>
+
+                                <div id="J-normal">
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">选项A：</label>
+
+                                        <div class="col-xs-5">
+                                            <input type="text" name="choice_a" id="choice_a" class="form-control"
+                                                   placeholder="">
+                                        </div>
+                                        <span style="color: red">
+                                                *
+                                            </span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">选项B：</label>
+
+                                        <div class="col-xs-5">
+                                            <input type="text" name="choice_b" id="choice_b" class="form-control"
+                                                   placeholder="">
+
+                                        </div>
+                                        <span style="color: red">
+                                                *
+                                            </span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">选项C：</label>
+
+                                        <div class="col-xs-5">
+                                            <input type="text" name="choice_c" id="choice_c" class="form-control"
+                                                   placeholder="">
+
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">正确选项：</label>
+
+                                        <div class="col-xs-5">
+                                            <label class="radio-inline">
+                                                <input type="radio" name="right_answer" value="1"> A
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="right_answer" value="2"> B
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="right_answer" value="3"> C
+                                            </label>
+
+                                        </div>
+                                        <span style="color: red">
+                                                *
+                                            </span>
+                                    </div>
+                                </div>
+
+                                <div id="J-application" style="display: none;">
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">脸部：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control " name="faceStyle">
+                                                <option value="0" selected="selected">选择轮廓</option>
+                                                <option value="曲">曲</option>
+                                                <option value="中">中</option>
+                                                <option value="直">直</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="faceQuality">
+                                                <option value="0" selected="selected">选择质感</option>
+                                                <option value="柔和">柔和</option>
+                                                <option value="中间">中间</option>
+                                                <option value="硬朗">硬朗</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">眼部：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control " name="eyeStyle">
+                                                <option value="0" selected="selected">选择轮廓</option>
+                                                <option value="曲">曲</option>
+                                                <option value="中">中</option>
+                                                <option value="直">直</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="eyeQuality">
+                                                <option value="0" selected="selected">选择质感</option>
+                                                <option value="柔和">柔和</option>
+                                                <option value="中间">中间</option>
+                                                <option value="硬朗">硬朗</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">鼻部：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control " name="noseStyle">
+                                                <option value="0" selected="selected">选择轮廓</option>
+                                                <option value="曲">曲</option>
+                                                <option value="中">中</option>
+                                                <option value="直">直</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="noseQuality">
+                                                <option value="0" selected="selected">选择质感</option>
+                                                <option value="柔和">柔和</option>
+                                                <option value="中间">中间</option>
+                                                <option value="硬朗">硬朗</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">唇部：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control " name="lipStyle">
+                                                <option value="0" selected="selected">选择轮廓</option>
+                                                <option value="曲">曲</option>
+                                                <option value="中">中</option>
+                                                <option value="直">直</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="lipQuality">
+                                                <option value="0" selected="selected">选择质感</option>
+                                                <option value="柔和">柔和</option>
+                                                <option value="中间">中间</option>
+                                                <option value="硬朗">硬朗</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">下颚：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control " name="jawStyle">
+                                                <option value="0" selected="selected">选择轮廓</option>
+                                                <option value="曲">曲</option>
+                                                <option value="中">中</option>
+                                                <option value="直">直</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="jawQuality">
+                                                <option value="0" selected="selected">选择质感</option>
+                                                <option value="柔和">柔和</option>
+                                                <option value="中间">中间</option>
+                                                <option value="硬朗">硬朗</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <hr>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">风格属性：</label>
+
+                                        <div class="col-xs-5">
+                                            <label class="radio-inline">
+                                                <input type="radio" name="attribute" value="1"> 小曲
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="attribute" value="2"> 小直曲
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="attribute" value="3"> 小直
+                                            </label>
+                                            <br>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="attribute" value="4"> 中曲
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="attribute" value="5"> 中直曲
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="attribute" value="6"> 中直
+                                            </label>
+                                            <br>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="attribute" value="7"> 大曲
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="attribute" value="8"> 大直曲
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="attribute" value="9"> 大直
+                                            </label>
+                                        </div>
+
+                                    </div>
+
+                                    <hr>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">风格美学定位：</label>
+
+                                        <div class="col-xs-5">
+                                            <label class="radio-inline">
+                                                <input type="radio" name="character" value="1"> 甜美可爱
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="character" value="2"> 魅力时尚
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="character" value="3"> 清纯简洁
+                                            </label>
+                                            <br>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="character" value="4"> 自然优雅
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="character" value="5"> 高雅柔美
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="character" value="6"> 知性沉着
+                                            </label>
+                                            <br>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="character" value="7"> 浪漫迷人
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="character" value="8"> 华丽高雅
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="character" value="9"> 现代摩登
+                                            </label>
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+
+                                <div id="J-style" style="display: none;">
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">选择风格：</label>
+
+                                        <div class="col-xs-5">
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" name="style" value="1"> 甜美可爱
+                                            </label>
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" name="style" value="2"> 魅力时尚
+                                            </label>
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" name="style" value="3"> 清纯简洁
+                                            </label>
+                                            <br>
+
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" name="style" value="4"> 自然优雅
+                                            </label>
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" name="style" value="5"> 高雅优美
+                                            </label>
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" name="style" value="6"> 知性沉着
+                                            </label>
+                                            <br>
+
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" name="style" value="7"> 浪漫迷人
+                                            </label>
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" name="style" value="8"> 华丽高雅
+                                            </label>
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" name="style" value="9"> 现代摩登
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div id="J-hair" style="display: none;">
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">五官正面照：</label>
+                                        <div class="col-xs-2">
+                                            <input type="hidden" name="face" id="J-face-hid">
+                                            <img src="" alt="" width="80" height="80"/>
+                                            <a href="#" id="face" class="btn btn-default">上传</a>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <span style="color: red">
+                                                *
+                                            </span>
+                                        </div>
+                                        <label class="control-label col-xs-2">正面生活照：</label>
+                                        <div class="col-xs-2">
+                                            <input type="hidden" name="life" id="J-life-hid">
+                                            <img src="" alt="" width="80" height="80"/>
+                                            <a href="#" id="life" class="btn btn-default">上传</a>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <span style="color: red">
+                                                *
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">五官合成照：</label>
+                                        <div class="col-xs-2">
+                                            <input type="hidden" name="sketch" id="J-sketch-hid">
+                                            <img src="" alt="" width="80" height="80"/>
+                                            <a href="#" id="sketch" class="btn btn-default">上传</a>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <span style="color: red">
+                                                *
+                                            </span>
+                                        </div>
+                                    </div>
+
+
+                                    <hr>
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">人物基本属性</label>
+                                        <label class="control-label col-xs-2" style="margin-left:32% ">需求意向</label>
+                                        <br>
+                                        <br>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">年龄：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control " name="age">
+                                                <option value="0" selected="selected">未选择</option>
+                                                <option value="20岁以下">20岁以下</option>
+                                                <option value="21-25岁">21-25岁</option>
+                                                <option value="26-30岁">26-30岁</option>
+                                                <option value="31-35岁">31-35岁</option>
+                                                <option value="36以上">36以上</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <span style="color: red">
+                                                *
+                                            </span>
+                                        </div>
+
+                                        <label class="control-label col-xs-2">剪发初衷：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="hair_intention">
+                                                <option value="0" selected="selected">未选择</option>
+                                                <option value="头发长了修修">头发长了修修</option>
+                                                <option value="想试试新发型">想试试新发型</option>
+                                                <option value="心情不好了">心情不好了</option>
+                                                <option value="参加聚会">参加聚会</option>
+                                                <option value="失恋了">失恋了</option>
+                                                <option value="被吐槽发型土">被吐槽发型土</option>
+                                                <option value="你看着办吧">你看着办吧</option>
+                                                <option value="好看就好">好看就好</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <span style="color: red">
+                                                *
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">身高：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="tall">
+                                                <option value="0" selected="selected">未选择</option>
+                                                <option value="150cm上下">150cm上下</option>
+                                                <option value="155cm上下">155cm上下</option>
+                                                <option value="160cm上下">160cm上下</option>
+                                                <option value="165cm上下">165cm上下</option>
+                                                <option value="170cm上下">170cm上下</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <span style="color: red">
+                                                *
+                                            </span>
+                                        </div>
+
+                                        <label class="control-label col-xs-2">风格喜好：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="style_like">
+                                                <option value="0" selected="selected">未选择</option>
+                                                <option value="生活化">生活化</option>
+                                                <option value="职业化">职业化</option>
+                                                <option value="时尚化">时尚化</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <span style="color: red">
+                                                *
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">身材：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control " name="body">
+                                                <option value="0" selected="selected">未选择</option>
+                                                <option value="苗条">苗条</option>
+                                                <option value="匀称">匀称</option>
+                                                <option value="丰腴">丰腴</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <span style="color: red">
+                                                *
+                                            </span>
+                                        </div>
+                                        <label class="control-label col-xs-2">想剪长度：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="hair_len">
+                                                <option value="0" selected="selected">未选择</option>
+                                                <option value="超短发">超短发</option>
+                                                <option value="短发">短发</option>
+                                                <option value="中发">中发</option>
+                                                <option value="长发">长发</option>
+                                                <option value="没想法">没想法</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <span style="color: red">
+                                                *
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">职业：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control " name="profession">
+                                                <option value="0" selected="selected">未选择</option>
+                                                <option value="白领">白领</option>
+                                                <option value="学生">学生</option>
+                                                <option value="公务员">公务员</option>
+                                                <option value="自由职业">自由职业</option>
+                                                <option value="其它">其它</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <span style="color: red">
+                                                *
+                                            </span>
+                                        </div>
+
+                                        <label class="control-label col-xs-2">烫发需求：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="hair_wave">
+                                                <option value="0" selected="selected">未选择</option>
+                                                <option value="可接受">可接受</option>
+                                                <option value="不接受">不接受</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <span style="color: red">
+                                                *
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">性别：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control " name="sex">
+                                                <option value="0" selected="selected">未选择</option>
+                                                <option value="男">男</option>
+                                                <option value="女">女</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <span style="color: red">
+                                                *
+                                            </span>
+                                        </div>
+
+                                        <label class="control-label col-xs-2">染发需求：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="hair_dye">
+                                                <option value="0" selected="selected">未选择</option>
+                                                <option value="可接受">可接受</option>
+                                                <option value="不接受">不接受</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <span style="color: red">
+                                                *
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">发质：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control " name="hair_quality">
+                                                <option value="0" selected="selected">未选择</option>
+                                                <option value="无">无</option>
+                                                <option value="偏疏">偏疏</option>
+                                                <option value="偏密">偏密</option>
+                                                <option value="自然卷">自然卷</option>
+                                                <option value="沙发">沙发</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <span style="color: red">
+                                                *
+                                            </span>
+                                        </div>
+
+                                    </div>
+
+                                    <hr>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">临摹方案一：</label>
+
+                                        <div class="col-xs-2">
+                                            <p style="margin-top: 8px" name="copy1_style"></p>
+                                            <br>
+                                            <input type="hidden" name="copy1_pic" id="J-copy1-hid">
+                                            <img src="" alt="" width="80" height="80"/>
+                                            <a href="#" id="copy1" class="btn btn-default">上传</a>
+                                        </div>
+
+
+                                        <label class="control-label col-xs-2">临摹方案二：</label>
+
+                                        <div class="col-xs-2">
+                                            <p name="copy2_style" style="margin-top: 8px"></p>
+                                            <br>
+                                            <input type="hidden" name="copy2_pic" id="J-copy2-hid">
+                                            <img src="" alt="" width="80" height="80"/>
+                                            <a href="#" id="copy2" class="btn btn-default">上传</a>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">临摹方案三：</label>
+
+                                        <div class="col-xs-2">
+                                            <p name="copy3_style" style="margin-top: 8px"></p>
+                                            <br>
+                                            <input type="hidden" name="copy3_pic" id="J-copy3-hid">
+                                            <img src="" alt="" width="80" height="80"/>
+                                            <a href="#" id="copy3" class="btn btn-default">上传</a>
+                                        </div>
+
+                                    </div>
+                                    <hr>
+
+
+                                </div>
+
+                                <div class="alert alert-danger" style="display: none;">
+                                    <strong>失败！</strong> 失败细节啥啥啥...
+                                </div>
+                                <a class="btn btn-primary" id="addButton"> 添加 </a>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br/>
+        </div>
+    </div>
+
+</div>
+
+
+{% end %}

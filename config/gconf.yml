@@ -1,0 +1,74 @@
+local:
+  web_name: 燕山争霸
+  domain: http://devgm.yanshanpk.com
+  agentdomain : http://devagent.yanshanpk.com
+
+  up_file_bucket: yanzi
+  up_file_secret: 08iGRu7cjyiOIZtSB/V36kYFHz4=
+  up_file_uname: shuweidev
+  up_file_pwd: swkj2016
+  up_domain: .b0.upaiyun.com
+
+  up_safe_bucket: swsafe
+  up_safe_secret: 8EKD/mmDNpkJrYuBipxID0MNr8M=
+  up_safe_uname: shuweisafe
+  up_safe_pwd: swsafe2016
+  up_safe_dir: /test
+  up_safe_token: shuweisafe2016
+
+
+develop:
+  web_name: 燕山争霸
+  domain: http://devgm.yanshanpk.com
+  agentdomain : http://devagent.yanshanpk.com
+
+  up_file_bucket: yanzi
+  up_file_secret: 08iGRu7cjyiOIZtSB/V36kYFHz4=
+  up_file_uname: shuweidev
+  up_file_pwd: swkj2016
+  up_domain: .b0.upaiyun.com
+
+  up_safe_bucket: swsafe
+  up_safe_secret: 8EKD/mmDNpkJrYuBipxID0MNr8M=
+  up_safe_uname: shuweisafe
+  up_safe_pwd: swsafe2016
+  up_safe_dir: /test
+  up_safe_token: shuweisafe2016
+
+
+test:
+  web_name: 燕山争霸
+  domain: http://ttgm.yanshanpk.com
+  agentdomain : http://ttagent.yanshanpk.com
+
+  up_file_bucket: yanshan
+  up_file_secret: Cp7CPpUljcXP22n2Ug39lTwS7t4=
+  up_file_uname: yanshan
+  up_file_pwd: zhengba123
+  up_domain: .b0.upaiyun.com
+
+  up_safe_bucket: swsafe
+  up_safe_secret: 8EKD/mmDNpkJrYuBipxID0MNr8M=
+  up_safe_uname: shuweisafe
+  up_safe_pwd: swsafe2016
+  up_safe_dir: /test
+  up_safe_token: shuweisafe2016
+
+
+release:
+  web_name: 燕山争霸
+  domain: http://game.yanshanpk.com
+  agentdomain : http://agent.yanshanpk.com
+
+  up_file_bucket: yanshan
+  up_file_secret: Cp7CPpUljcXP22n2Ug39lTwS7t4=
+  up_file_uname: yanshan
+  up_file_pwd: zhengba123
+  up_domain: .b0.upaiyun.com
+
+  up_safe_bucket: swsafe
+  up_safe_secret: 8EKD/mmDNpkJrYuBipxID0MNr8M=
+  up_safe_uname: shuweisafe
+  up_safe_pwd: swsafe2016
+  up_safe_dir: /test
+  up_safe_token: shuweisafe2016

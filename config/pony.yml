@@ -1,0 +1,32 @@
+local:
+  host: rdsea8n4lglktg5e69p1o.mysql.rds.aliyuncs.com
+#  db: yanshan_dev
+#  user: shuwei_dev
+#  passwd: pwd_dev2016
+#  charset: utf8mb4
+
+  db: yanshan_test
+  user: shuwei_test
+  passwd: pwd_test2016
+  charset: utf8mb4
+
+develop:
+  host: rdsea8n4lglktg5e69p1o.mysql.rds.aliyuncs.com
+  db: yanshan_test
+  user: shuwei_test
+  passwd: pwd_test2016
+  charset: utf8mb4
+
+test:
+  host: rdsea8n4lglktg5e69p1.mysql.rds.aliyuncs.com
+  db: yanshan_test
+  user: shuwei_test
+  passwd: pwd_test2016
+  charset: utf8mb4
+
+release:
+  host: rdsea8n4lglktg5e69p1o.mysql.rds.aliyuncs.com
+  db: yanshan_db
+  user: yanshan
+  passwd: pwd_yanshan2016
+  charset: utf8mb4

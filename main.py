@@ -8,7 +8,7 @@ import os
 import tornado.web
 import tornado.ioloop
 
-import controller
+import controller, manage
 
 # 端口号
 PORT = 8080
@@ -35,7 +35,7 @@ class Handler(tornado.web.RequestHandler):
 
 
 def make_app():
-    return tornado.web.Application(controller.urls.ctrls, **settings)
+    return tornado.web.Application(controller.urls.ctrls + manage.urls.ctrls, **settings)
 
 
 if __name__ == "__main__":

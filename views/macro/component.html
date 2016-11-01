@@ -1,0 +1,118 @@
+{%macro mnav(name)%}
+<div class="navbar navbar-default">
+    <div class="container">
+        <ul class="nav navbar-nav">
+            <li class="{{'active' if name=='index' else ''}}">
+                <a href="/doctor/index">首页</a>
+            </li>
+            <li class="{{'active' if name=='book' else ''}}">
+                <a href="/doctor/book/list">预约</a>
+            </li>
+            <li class="{{'active' if name=='customer' else ''}}">
+                <a href="/doctor/customer/list">患者</a>
+            </li>
+
+        </ul>
+    </div>
+</div>
+{%endmacro%}
+
+{%macro mmnav(name)%}
+<div class="navbar navbar-default">
+    <div class="container">
+        <ul class="nav navbar-nav">
+            <li class="{{'active' if name=='index' else ''}}">
+                <a href="/duty/index">首页</a>
+            </li>
+            <li class="{{'active' if name=='customer' else ''}}">
+                <a href="/duty/customer/list">用户</a>
+            </li>
+            <li class="{{'active' if name=='doctor' else ''}}">
+                <a href="/duty/doctor/list">大医</a>
+            </li>
+             <li class="{{'active' if name=='chat' else ''}}">
+                <a href="/duty/chat">聊天</a>
+            </li>
+
+        </ul>
+    </div>
+</div>
+{%endmacro%}
+
+
+{%macro sideNav(name)%}
+{%endmacro%}
+
+{%macro pager(page, url)%}
+<div class="pull-right">
+    <ul class="pagination">
+        {%if page.pagenum > 1%}
+        <li>
+            <a href="{{url|replace(':page:',page.pagenum-1)}}">上一页</a>
+        </li>
+        {%endif%}
+
+        {%if page.ptotal > 10%}
+
+        {%if 5> page.ptotal-page.pagenum %}
+        {%for num in range(page.ptotal-9,page.ptotal+1)%}
+        {% if page.pagenum == num %}
+        <li class="active">
+            <a href="{{url|replace(':page:',num)}}">{{num}}</a>
+        </li>
+        {% else %}
+        <li>
+            <a href="{{url|replace(':page:',num)}}">{{num}}</a>
+        </li>
+        {% endif %}
+        {%endfor%}
+        {%elif 5>= page.pagenum %}
+        {% for num in range(10) %}
+        {% if page.pagenum == num+1 %}
+        <li class="active">
+            <a href="{{url|replace(':page:',num+1)}}">{{num+1}}</a>
+        </li>
+        {% else %}
+        <li>
+            <a href="{{url|replace(':page:',num+1)}}">{{num+1}}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+        {%else%}
+        {%for num in range(page.pagenum-5,page.pagenum+5)%}
+        {% if page.pagenum == num %}
+        <li class="active">
+            <a href="{{url|replace(':page:',num)}}">{{num}}</a>
+        </li>
+        {% else %}
+        <li>
+            <a href="{{url|replace(':page:',num)}}">{{num}}</a>
+        </li>
+        {% endif %}
+        {%endfor%}
+        {% endif %}
+
+        {% else %}
+        {%if page.ptotal > 1%}
+        {% for num in range(page.ptotal) %}
+        {% if page.pagenum == num+1 %}
+        <li class="active">
+            <a href="{{url|replace(':page:',num+1)}}">{{num+1}}</a>
+        </li>
+        {% else %}
+        <li>
+            <a href="{{url|replace(':page:',num+1)}}">{{num+1}}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+        {% endif %}
+
+        {%if page.ptotal > page.pagenum %}
+        <li>
+            <a href="{{url|replace(':page:',page.pagenum+1)}}">下一页</a>
+        </li>
+        {%endif%}
+    </ul>
+</div>
+{%endmacro%}

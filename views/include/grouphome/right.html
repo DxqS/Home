@@ -1,0 +1,40 @@
+<div class="right">
+    <img src="{{groupId|avatar('group',80)}}" class="gico c_r3"/>
+
+    <h3 class="gname">{{groupId|gname}}</h3>
+
+    <p class="aab">
+        {%if groupId|isMember%}
+        已加入
+        {%else%}
+        <a href="javascript:void(0)" id="J-join-btn">加入小组</a>
+        {%endif%}
+        <span>|</span><a href="/group/{{groupId}}">返回小组首页</a>
+    </p>
+
+    <p class="topic-num">
+        共{{groupId|grpCount('topic')}}个话题
+    </p>
+    <a href="/create/topic?groupId={{groupId}}" class="pubtopic-btn clearfix">
+        <div class="ui-button skin-button-blue-big-pubtopic">
+            <span class="ui-button-bg-left"></span>
+
+            <div class="ui-button-label">
+                <span class="ui-button-ico"></span>
+                <span class="ui-button-text">&nbsp;&nbsp;发布话题&nbsp;&nbsp;</span>
+            </div>
+        </div>
+    </a>
+
+    <div class="shortcut-list">
+        <h4>小组里的热门话题... ...</h4>
+        <ul>
+            {%for t in hotTopics%}
+            <li>
+                <span>{{t.reply_num}}/{{t.read_num}}</span>
+                <a href="/topic/{{t._id}}">{{t.title}}</a>
+            </li>
+            {%endfor%}
+        </ul>
+    </div>
+</div>

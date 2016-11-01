@@ -1,0 +1,126 @@
+{% extends "../layout/mbase.html" %}
+
+{% block css %}{% end %}
+
+{% block js %}
+<script>
+    $(function () {
+        $('.btn').click(function () {
+            var btn_typ = $(this).data('typ');
+            var data = {'start': $('#' + btn_typ + '_1').val(), 'end': $('#' + btn_typ + '_2').val()};
+            console.log(btn_typ);
+            console.log(data);
+
+            $.post('/m/data/' + btn_typ, data, function (res) {
+                $('#add_' + btn_typ).html("");
+                $('#add_' + btn_typ).append(res)
+            }, 'html')
+        })
+    })
+</script>
+
+{% end %}
+
+{% block nav %}
+{% module Template("module/backnav.html", name='data') %}
+{% end %}
+
+
+{% block container%}
+<div class="container">
+    <div class="row" style="...">
+        <div class="pull-right layout-ml20 col-md-8" style="...">
+            <!--<a href="#" class="btn btn-primary pull-right btn-sm">点击刷新</a>-->
+            <!--<span class="layout-mr10 pull-right">从 <time>2016/7/31 17:00:00</time> 到 2016/7/31 17:00:00的转化率（已支付/宝描打开量）</span>-->
+        </div>
+        <h3>
+            时间维度
+            <small>查询</small>
+        </h3>
+        <hr/>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-2">
+            <div class="list-group layout-mt20">
+                <a href="/m/data/list" class="list-group-item ">数据总览</a>
+                <a href="/m/data/trial/list" class="list-group-item">试玩数据</a>
+                <a href="/m/data/ask/list" class="list-group-item">催付数据</a>
+                <a href="/m/data/game/list" class="list-group-item active">游戏数据</a>
+            </div>
+        </div>
+        <div class="col-xs-10">
+            <div class="row">
+                <div class="col-xs-12">
+                    <ul id="myTabs" class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="">
+                            <a href="#pingtai" id="pingtai-tab" role="tab" data-toggle="tab" aria-controls="pingtai"
+                               aria-expanded="true">平台维度</a>
+                        </li>
+                        <li role="presentation" class="active">
+                            <a href="#top100" role="tab" id="lianyun-tab" data-toggle="tab" aria-controls="top100"
+                               aria-expanded="false">top100玩家列表</a>
+                        </li>
+                    </ul>
+                    <div id="myTabContent" class="tab-content layout-mt20">
+                        <!--第一个标签-->
+                        <div role="tabpanel" class="tab-pane" id="pingtai" aria-labelledby="pingtai-tab">
+                            <div class="row" style="...">
+                                <table class="table table-bordered text-center layout-mt10" style="font-size: smaller">
+                                    <tr>
+                                        <td>总玩家人数</td>
+                                        <td>元宝总数</td>
+                                        <td>平均玩家元宝数</td>
+                                        <td>已消耗元宝数</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{{data[0]}}</td>
+                                        <td>{{data[1]}}</td>
+                                        <td>{{data[2]}}</td>
+                                        <td>{{data[3]}}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <!--第二个标签-->
+                        <div role="tabpanel" class="tab-pane active in" id="top100" aria-labelledby="top100-tab">
+                            <div class="row" style="...">
+                                <div class="col-xs-9 " id="searchcontent">
+                                    <table class="table table-hover layout-mt20">
+                                        <thead>
+                                        <tr>
+                                            <th>玩家编号</th>
+                                            <th>呢称</th>
+                                            <th>累积元宝数</th>
+                                            <th>金币数</th>
+                                            <th>等级</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {%for player in top100%}
+                                        <tr>
+                                            <td>{{7000000+player['uid']}}</td>
+                                            <td>{{player['nickname']}}</td>
+                                            <td>{{player['ingot']}}</td>
+                                            <td>{{player['gold']}}</td>
+                                            <td>{{grade(player['exp'])}}</td>
+                                            <td align="left">
+                                                <a href="/m/user/edit/{{player['uid']}}" class="btn btn-primary btn-sm">查看</a>
+                                            </td>
+                                        </tr>
+                                        {%end%}
+
+                                        </tbody>
+                                    </table>
+                                    {% module Template("module/bspager.html",pager=pager,url="/m/data/game/list?pagenum=:page:")%}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%end%}

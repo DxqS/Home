@@ -1,0 +1,71 @@
+{% extends "../layout/mbase.html" %}
+
+{% block css %}{% end %}
+
+{% block js %}
+{% module Template("module/js.html", filepath='zui/upyun/spark-md5.min.js') %}
+{% module Template("module/js.html", filepath='zui/upyun/async.min.js') %}
+{% module Template("module/js.html", filepath='zui/upyun/upyun-mu.js') %}
+<script>
+    $(function () {
+        $('#J-save-btn').click(submit);
+
+        function submit() {
+            $(this).unbind('click');
+            var data = $.formUtils.formData('form');
+            var typ = $('#typ').val();
+            $.post(window.location.pathname, data, function (res) {
+                if (res.status == 1) {
+                    window.location.href = '/m/comment/' + typ + '/list'
+                }
+            }, 'json');
+            return false;
+        }
+    });
+</script>
+{% end %}
+
+{% block nav %}
+{% module Template("module/backnav.html", name='design') %}
+{% end %}
+
+
+{% block container%}
+
+<div class="container">
+    <a href="/m/comment/{{comment.typ}}/list" class="btn btn-primary pull-right btn-sm layout-mt20">返回</a>
+    <input type="hidden" value="{{comment.typ}}" id="typ">
+    <h3>审核管理</h3>
+    <hr/>
+    <div class="row">
+        <div class="col-xs-3">
+            <div class="list-group layout-mt20" id="list_group">
+                <a href="/m/design/new/list" class="list-group-item">未审核</a>
+                <a href="/m/design/pass/list" class="list-group-item">已审核</a>
+                <a href="/m/comment/{{comment.typ}}/list" class="list-group-item active">审核评语</a>
+            </div>
+        </div>
+
+        <div class="col-xs-9">
+            <div class="row">
+                <div class="col-xs-12">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label col-xs-2">评语内容：</label>
+                            <div class="col-xs-5">
+                                <textarea type="text" class="form-control" placeholder="" name="comment">
+                                    {{comment.comment}}
+                                </textarea>
+                            </div>
+                            <!--<div class="help-block">字数限制：保持20字以内</div>-->
+                        </div>
+                        <a id="J-save-btn" class="btn btn-primary"> 保存 </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% end %}

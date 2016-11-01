@@ -1,0 +1,77 @@
+<div class="notes" id="J-memos">
+    <div class="line"></div>
+    <div class="center clearfix">
+        {%for m in memoList%}
+        <div class="ui-note skin-note-red note{{loop.index}}">
+            <span class="ui-note-node"></span>
+            <span class="ui-note-header"></span>
+
+            <div class="ui-note-body">
+                {%if m.type=='text'%}
+                <span style="font-size: {{m.text|length|memoFS}}px">{{m.text}}</span>
+                {%else%}
+                <div class="img">
+                    <img src="{{gconf.img_domain}}{{m.img.path}}"/>
+                </div>
+                {%endif%}
+            </div>
+            <span class="ui-note-footer"></span>
+            {%if session.uid==m.user_id%}
+            <a href="javascript:void(0)" mid="{{m._id}}" class="ui-note-close J-memo-item-close">关闭</a>
+            {%endif%}
+        </div>
+        {%endfor%}
+        <div class="ui-note skin-note-red note{{memoList|length+1}} note-write">
+            <span class="ui-note-node"></span>
+            <span class="ui-note-header"></span>
+
+            <div class="ui-note-body">
+                <div id="J-add-memo-btns" class="add-memo-btns">
+                    <a href="javascript:void(0)" id="J-add-memo-btn" class="add-btn" title="图片便签"></a>
+                </div>
+                <div id="J-add-memo-text" style="display: none;">
+                </div>
+                <div id="J-add-memo-img" class="img" style="display: none;">
+                    <div class="progress">
+                        <div class="progress-inner"></div>
+                    </div>
+                    <img style="display: none;"/>
+                </div>
+            </div>
+            <span class="ui-note-footer"></span>
+        </div>
+    </div>
+</div>
+<div style="display: none">
+    <div class="write-memo-modal" id="J-write-memo-modal">
+        <div class="inner-warp">
+            <div class="cap clearfix">
+                <a href="javascript:void(0)" class="close-btn J-modal-close"></a>
+
+                <h3>添加便签</h3>
+            </div>
+            <div class="wim-body">
+                <div class="select">
+                    <a href="#" class="J-img-btn img-btn">
+                        <span class="ico"></span>
+
+                        <p>图片</p>
+
+                        <div class="upload-btn">
+                            <span id="J-add-imgmemo-btn"></span>
+                        </div>
+                    </a>
+                    <a href="#" class="J-text-btn text-btn">
+                        <span class="ico"></span>
+
+                        <p>文字</p>
+                    </a>
+                </div>
+                <div style="display: none;" class="ta">
+                    <textarea></textarea>
+                    <label>Ctrl+Enter&nbsp;保存&nbsp;&nbsp;&nbsp;最多70个字</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

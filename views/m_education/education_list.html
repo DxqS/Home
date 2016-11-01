@@ -1,0 +1,81 @@
+{% extends "../layout/mbase.html" %}
+
+{% block css %}{% end %}
+
+{% block js %}
+
+
+{% end %}
+
+{% block nav %}
+{% module Template("module/backnav.html", name='education') %}
+{% end %}
+
+
+{% block container%}
+<div class="container">
+
+    <h3>线下教育
+        <small>列表</small>
+    </h3>
+    <hr/>
+
+    <div class="row">
+        <div class="col-xs-3">
+            <div class="input-group layout-mt20">
+                <input type="text" class="form-control" placeholder="输入用户名称搜索">
+                <span class="input-group-btn"> <a class="btn btn-default"> 搜索 </a> </span>
+            </div>
+            <div class="list-group layout-mt20" id="list_group">
+                <a href="/m/education/paid" class="list-group-item {{'active' if typ== 'paid' else ' '}}">已报名</a>
+                <a href="/m/education/sort" class="list-group-item {{'active' if typ== 'sort' else ' '}}">已排期</a>
+                <a href="/m/education/unpass" class="list-group-item {{'active' if typ== 'unpass' else ' '}}">未结业</a>
+                <a href="/m/education/pass" class="list-group-item {{'active' if typ== 'pass' else ' '}}">已结业</a>
+                <a href="/m/term/list" class="list-group-item ">学期管理</a>
+            </div>
+        </div>
+
+        <div class="col-xs-9">
+            <table class="table table-hover layout-mt20">
+                <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>昵称</th>
+                    <th>姓名</th>
+                    <th>手机号</th>
+                    <th>地区</th>
+                    <th width="50">商品名称</th>
+                    <th>报名时间</th>
+                    <th>状态</th>
+                    <th>学期</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {%for enroll in enroll_list%}
+                <tr>
+                    <td>{{7000000+enroll.user.id}}</td>
+                    <td>{{enroll.user.user_name}}</td>
+                    <td>{{enroll.real_name}}</td>
+                    <td>{{enroll.mobile}}</td>
+                    <td>{{enroll.user.city}}</td>
+                    <td>{{enroll.title}}</td>
+                    <td>{{ftime(enroll.ctime,'%Y-%m-%d')}}</td>
+                    <td>{{enrollStatus(enroll.status)}}</td>
+                    <td>{{enroll.term.title if enroll.term else ''}}</td>
+                    <td width="50px" align="right">
+                        <a href="/m/education/detail/{{enroll.id}}" class="btn btn-primary btn-sm">修改</a>
+                    </td>
+                </tr>
+                {%end%}
+                </tbody>
+            </table>
+            {% module Template("module/bspager.html", pager=pager,url="/m/education/"+typ+"?pagenum=:page:") %}
+        </div>
+    </div>
+
+
+</div>
+
+{% end %}

@@ -1,0 +1,66 @@
+{% extends "../layout/mbase.html" %}
+
+{% block css %}{% end %}
+
+{% block js %}{% end %}
+
+{% block nav %}
+{% module Template("module/backnav.html", name='education') %}
+{% end %}
+
+
+{% block container%}
+<div class="container">
+    <a href="/m/term/add" class="btn btn-primary pull-right btn-sm layout-mt20">添加</a>
+
+    <h3>学期
+        <small>信息</small>
+    </h3>
+    <hr/>
+    <div class="row">
+        <div class="col-xs-3">
+            <div class="input-group layout-mt20">
+                <input type="text" class="form-control" placeholder="输入用户名称搜索">
+                <span class="input-group-btn"> <a class="btn btn-default"> 搜索 </a> </span>
+            </div>
+            <div class="list-group layout-mt20" id="list_group">
+                <a href="/m/education/paid" class="list-group-item ">已报名</a>
+                <a href="/m/education/sort" class="list-group-item ">已排期</a>
+                <a href="/m/education/unpass" class="list-group-item ">未结业</a>
+                <a href="/m/education/pass" class="list-group-item ">已结业</a>
+                <a href="/m/term/list" class="list-group-item active">学期管理</a>
+            </div>
+        </div>
+
+        <div class="col-xs-9">
+            <table class="table table-hover layout-mt20">
+                <thead>
+                <tr>
+                    <th>学期名称</th>
+                    <th>上课时间</th>
+                    <th>上课地址</th>
+                    <th>已排期数</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {%for term in terms%}
+                <tr>
+                    <td>{{term.title}}</td>
+                    <td>{{ftime(term.start_time,'%Y-%m-%d')}}到{{ftime(term.end_time,'%Y-%m-%d')}}</td>
+                    <td>{{term.address}}</td>
+                    <td>{{term.sort_count}}</td>
+                    <td width="200" align="right">
+                        <a href="/m/term/edit/{{term.id}}" class="btn btn-primary btn-sm">查看</a>
+                    </td>
+                </tr>
+                {%end%}
+            </table>
+
+        </div>
+    </div>
+
+
+</div>
+
+{% end %}

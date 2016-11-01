@@ -1,0 +1,87 @@
+{% import "macro/common.html" as common%}
+{% extends "layout/base.html" %}
+
+{% block base_css %}
+<link href="/static/css/dist/base.css" type="text/css" rel="stylesheet"/>
+{% block css %}{% endblock %}
+{% endblock %}
+
+{% block base_js %}
+{% block js %}{% endblock %}
+{% endblock %}
+
+{% block body %}
+<div class="header">
+    <div class="g-center">
+        <a href="/" class="logo"></a>
+
+        <div>
+            {%if session.uid%}
+            <a href="/setting"><s class="login"></s>你好，{{session.name}}</a>
+            {%else%}
+            <s class="login"></s><a href="/login">登录</a> / <a href="/register">注册</a>
+            {%endif%}
+
+            <!--<a href="/yuyue"><s class="date"></s>预约</a>-->
+            <a href="#"><s class="order"></s>预约</a>
+        </div>
+    </div>
+</div>
+<div class="banner">
+    <hr>
+    <div class="g-center">
+        <ul class="nav">
+            <li><a href="/">首页</a></li>
+            <li><a href="#">作品展示</a></li>
+            <li><a href="#">拍摄流程</a></li>
+            <li><a href="http://www.mantusy.com" target="_blank">缦图写真</a></li>
+            <li class="last"><a href="#">加盟海马体</a></li>
+        </ul>
+    </div>
+</div>
+{% block mnav %}
+{% endblock %}
+
+<!-- / #intro -->
+{% block container%}
+{% endblock%}
+<!-- / #content -->
+<div class="footer">
+    <div class="g-center">
+        <div class="contact">
+            <a href="#">
+                <span class="chi">联系我们</span>
+                <br/>
+                <span class="eng">CONTACT US</span>
+            </a>
+
+            <p class="number">4006 - 656 - 406</p>
+
+            <p class="address">杭州经济开发区学源街998号传媒生活区L楼一层A104</p>
+        </div>
+        <ul class="link clearfix">
+            <li>
+                <a href="#" class="title">关于</a>
+                <a href="#">海马体活动</a>
+                <a href="#">环境展示</a>
+            </li>
+            <li>
+                <a href="#" class="title">合作</a>
+                <a href="#">加入我们</a>
+                <a href="#">友情链接</a>
+            </li>
+            <li>
+                <a href="#" class="title">帮助</a>
+                <a href="#">在线客服</a>
+                <a href="#">预约流程</a>
+            </li>
+            <li>
+                <a href="#" class="title">更多</a>
+                <a href="#">缦图摄影</a>
+                <a href="#">品牌声明</a>
+            </li>
+        </ul>
+        <p>&#64;2014 steam. All Rights Reserved.Designed by MANTU</p>
+    </div>
+</div>
+{% endblock %}

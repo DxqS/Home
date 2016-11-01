@@ -1,0 +1,605 @@
+{% extends "../layout/mbase.html" %}
+
+{% block css %}{% end %}
+
+{% block js %}
+
+{% module Template("module/js.html", filepath='zui/upyun/spark-md5.min.js') %}
+{% module Template("module/js.html", filepath='zui/upyun/async.min.js') %}
+{% module Template("module/js.html", filepath='zui/upyun/upyun-mu.js') %}
+
+<script>
+    $(function () {
+        $('#addButton').click(function () {
+            var data = $.formUtils.formData('form');
+            var question_id = $('#q_id').val();
+            data['type']=$('#q_type').val();
+            console.log(data);
+            $.post('/m/question/edit/'+ question_id, data, function (res) {
+                if (res.status == 1) {
+                    window.location.href = '/m/question/listbycondition/'+ $('#q_gate').val()+'?pagenum='+$('#pagenum').val()
+                }
+            }, 'json');
+        });
+         //自动锁定曲中直
+    $(function () {
+        $('#section_id').change(function () {
+            var ss = ['one', 'two', 'three', 'four', 'five', 'six', 'boss'];
+            var tt = ss.indexOf($(this).val()) + 1;
+            var keyval = {
+                1: '甜美可爱', 2: '魅力时尚', 3: '清纯简洁',
+                4: '自然优雅', 5: '高雅柔美', 6: '知性沉着',
+                7: '浪漫迷人', 8: '华丽高雅', 9: '现代摩登'
+            };
+            if (tt <= 3) {
+                $("p[name='copy1_style']").html(keyval[tt]);
+                $("p[name='copy2_style']").html(keyval[tt + 3]);
+                $("p[name='copy3_style']").html(keyval[tt + 6]);
+            } else {
+                $("p[name='copy1_style']").html('无');
+                $("p[name='copy2_style']").html('无');
+                $("p[name='copy3_style']").html('无');
+            }
+        })
+    })
+        //上传logo或者照片
+    $(function () {
+        var upconfig = {
+            bucket: '{{gconf["up_file_bucket"]}}',
+            expiration: parseInt((new Date().getTime() + 3600000) / 1000),
+            // 尽量不要使用直接传表单 API 的方式，以防泄露造成安全隐患
+            form_api_secret: '{{gconf["up_file_secret"]}}'
+        };
+
+
+        $('.btn-default').click(function () {
+            if ($(this).html() == "上传") {
+                $(this).html("上传中...");
+                $('#file').click();
+            }
+
+            return false;
+        });
+
+        $('#file').change(function () {
+            var ext = '.' + document.getElementById('file').files[0].name.split('.').pop();
+            var instance = new Sand(upconfig);
+            var options = {
+                'notify_url': 'http://upyun.com'
+            };
+
+            instance.setOptions(options);
+            instance.upload('/upload/test/' + parseInt((new Date().getTime() + 3600000) / 1000) + ext);
+        });
+
+        document.addEventListener('uploaded', function (e) {
+            var data = e.detail;
+            var path = "http://{{gconf['up_file_bucket']}}.b0.upaiyun.com" + data["path"];
+            var upload_id = $(e.path[0].activeElement).attr('id');
+            console.log(path);
+
+            $(e.path[0].activeElement).html("上传").removeAttr("disabled");
+            var img = $(e.path[0].activeElement).prev('img');
+            img.attr('src', path);
+            $('#J-' + upload_id + '-hid').val(path);
+
+        });
+
+    });
+    });
+</script>
+
+{% end %}
+
+{% block nav %}
+{% module Template("module/backnav.html", name='question') %}
+{% end %}
+
+{% block container%}
+
+<div class="container">
+        <a href= "/m/question/listbycondition/{{questionone['gate']}}?pagenum={{pagenum}}" class="btn btn-primary pull-right btn-sm layout-mt20">返回</a>
+        <input hidden="hidden" id="q_id" value="{{questionone['_id']}}">
+        <input hidden="hidden" id="q_type" value="{{questionone['type']}}">
+        <input hidden="hidden" id="q_gate" value="{{questionone['gate']}}">
+        <input hidden="hidden" id="pagenum" value="{{pagenum}}">
+        <h3>题库
+            <small>管理</small>
+        </h3>
+        <hr/>
+
+        <div>
+            <div class="row">
+                <div class="col-xs-9">
+                    <h4>查看习题</h4>
+                    <hr/>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <form class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="control-label col-xs-2">章节：</label>
+                                    <div class="col-xs-5">
+                                        <select name="gate" id="gate_id" class="form-control">
+                                            {%for i in range(10)%}
+                                            <option value="{{i+1}}" {% if i==questionone['gate']-1 %} selected {%end%}>
+                                                第{{i+1}}章
+                                            </option>
+                                            {%end%}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-2">关口：</label>
+                                    <div class="col-xs-5">
+                                        <select name="section" id="section_id" class="form-control">
+                                            {%for i in range(6)%}
+                                            <option value={{sectionName(i+1)}} {% if questionone['section']==sectionName(i+1) %} selected{%end%}>{{sectionName(i+1)}} </option>
+                                            {%end%}
+                                        </select>
+                                    </div>
+                                </div>
+                                {%if questionone['type']==2%}
+                                <div class="form-group" id="question_id">
+                                    <label class="control-label col-xs-2">题目：</label>
+                                    <div class="col-xs-5">
+                                        <textarea type="text" name="title" id="J-title-inp" class="form-control">{{questionone['ask']['title']}}</textarea>
+                                    </div>
+                                </div>
+                                {%end%}
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-2">提问图片：</label>
+                                    <input type="file" id="file" style="display: none">
+                                    <div class="col-xs-5">
+                                        {%if questionone['ask']['img']%}
+                                        <input type="hidden" name="imgUrl" value="{{questionone['ask']['img']}}">
+                                        <img src="{{upfile(questionone['ask']['img'])}}"  width="80" alt="">
+                                        {%end%}
+                                    </div>
+                                </div>
+
+                                {%if questionone['type']==2%}
+                                <div class="form-group">
+                                    <label class="control-label col-xs-2">题型：</label>
+                                    <label class="radio-inline">普通选择题</label>
+                                </div>
+                                <hr/>
+
+                                <div id="J-normal">
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">选项A：</label>
+                                        <div class="col-xs-5">
+                                            <input type="text" name="choice_a" id="choice_a" class="form-control"
+                                                   placeholder="" value="{{questionone['options'][0]}}">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">选项B：</label>
+                                        <div class="col-xs-5">
+                                            <input type="text" name="choice_b" id="choice_b" class="form-control"
+                                                   placeholder="" value="{{questionone['options'][1]}}">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">选项C：</label>
+                                        <div class="col-xs-5">
+                                            <input type="text" name="choice_c" id="choice_c" class="form-control"
+                                                   placeholder="" value="{{questionone['options'][2]}}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">正确选项：</label>
+                                        <div class="col-xs-5">
+                                            {%for i in range(3)%}
+                                            <label class="radio-inline">
+                                                <input type="radio" name="right_answer" value="{{i+1}}" {%if questionone['answer']==(i+1)%}checked="checked" {%end%}> {{selectedName(i+1)}}
+                                            </label>
+                                            {%end%}
+                                        </div>
+                                    </div>
+                                </div>
+                                {%elif questionone['type'] in [3,4]%}
+                                <div class="form-group">
+                                    <label class="control-label col-xs-2">题型：</label>
+                                    {%if questionone['type']==3%}
+                                    <label class="radio-inline">发型风格题</label>
+                                    {%elif questionone['type']==4%}
+                                    <label class="radio-inline">风格打造题</label>
+                                    {%end%}
+                                </div>
+                                <hr/>
+                                <div style="">
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">选择风格：</label>
+
+                                        <div class="col-xs-5">
+                                            {%for i in range(9)%}
+                                            <label class="checkbox-inline" style="margin-left: 0;width: 30%;">
+                                                <input type="checkbox" name="style" value="{{i+1}}" {%if (i+1) in questionone['solution']%} checked="checked"{%end%}> {{positionName(i+1)}}
+                                            </label>
+                                            {%end%}
+                                        </div>
+
+                                    </div>
+                                    <hr/>
+                                </div>
+                                {%elif questionone['type']==1%}
+                                <div class="form-group">
+                                    <label class="control-label col-xs-2">题型：</label>
+                                    <label class="radio-inline">应用题</label>
+                                </div>
+                                <hr/>
+                                <div id="J-application" style="">
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">脸部轮廓：</label>
+                                        <div class="col-xs-2">
+                                            <select class="form-control " name="faceStyle">
+                                                {%for i in range(3)%}
+                                                <option value="{{solutionName(i+1)}}" {%if questionone['solution'][0]==solutionName(i+1)%} selected="selected" {%end%}>{{solutionName(i+1)}}</option>
+                                                {%end%}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">眼部轮廓：</label>
+                                        <div class="col-xs-2">
+                                            <select class="form-control " name="eyeStyle">
+                                                {%for i in range(3)%}
+                                                <option value="{{solutionName(i+1)}}" {%if questionone['solution'][1]==solutionName(i+1)%} selected="selected" {%end%}>{{solutionName(i+1)}}</option>
+                                                {%end%}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">鼻部轮廓：</label>
+                                        <div class="col-xs-2">
+                                            <select class="form-control " name="noseStyle">
+                                                {%for i in range(3)%}
+                                                <option value="{{solutionName(i+1)}}" {%if questionone['solution'][2]==solutionName(i+1)%} selected="selected" {%end%}>{{solutionName(i+1)}}</option>
+                                                {%end%}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">唇部轮廓：</label>
+                                        <div class="col-xs-2">
+                                            <select class="form-control " name="lipStyle">
+                                                {%for i in range(3)%}
+                                                <option value="{{solutionName(i+1)}}" {%if questionone['solution'][3]==solutionName(i+1)%} selected="selected" {%end%}>{{solutionName(i+1)}}</option>
+                                                {%end%}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">下颚轮廓：</label>
+                                        <div class="col-xs-2">
+                                            <select class="form-control " name="jawStyle">
+                                                {%for i in range(3)%}
+                                                <option value="{{solutionName(i+1)}}" {%if questionone['solution'][4]==solutionName(i+1)%} selected="selected" {%end%}>{{solutionName(i+1)}}</option>
+                                                {%end%}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <hr/>
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">脸部质感：</label>
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="faceQuality">
+                                                {%for i in range(3)%}
+                                                <option value="{{textureName(i+1)}}" {%if questionone['texture'][0]==textureName(i+1)%} selected="selected" {%end%}>{{textureName(i+1)}}</option>
+                                                {%end%}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">眼部质感：</label>
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="eyeQuality">
+                                                {%for i in range(3)%}
+                                                <option value="{{textureName(i+1)}}" {%if questionone['texture'][1]==textureName(i+1)%} selected="selected" {%end%}>{{textureName(i+1)}}</option>
+                                                {%end%}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">鼻部质感：</label>
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="noseQuality">
+                                                {%for i in range(3)%}
+                                                <option value="{{textureName(i+1)}}" {%if questionone['texture'][2]==textureName(i+1)%} selected="selected" {%end%}>{{textureName(i+1)}}</option>
+                                                {%end%}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">唇部质感：</label>
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="lipQuality">
+                                                {%for i in range(3)%}
+                                                <option value="{{textureName(i+1)}}" {%if questionone['texture'][3]==textureName(i+1)%} selected="selected" {%end%}>{{textureName(i+1)}}</option>
+                                                {%end%}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">下颚质感：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="jawQuality">
+                                                {%for i in range(3)%}
+                                                <option value="{{textureName(i+1)}}" {%if questionone['texture'][4]==textureName(i+1)%} selected="selected" {%end%}>{{textureName(i+1)}}</option>
+                                                {%end%}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <hr/>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">风格属性：</label>
+                                        <div class="col-xs-5">
+                                            {%for i in range(9)%}
+                                            <label class="radio-inline" style="margin-left: 0;width: 30%;">
+                                                <input type="radio" name="attribute" value="{{i+1}}" {%if questionone['style']==styleName(i+1)%} checked="checked" {%end%}>{{styleName(i+1)}}
+                                            </label>
+                                            {%end%}
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">风格美学定位：</label>
+                                        <div class="col-xs-5">
+                                            {%for i in range(9)%}
+                                            <label class="radio-inline" style="margin-left: 0;width: 30%;">
+                                                <input type="radio" name="character" value="{{i+1}}" {%if questionone['position']==positionName(i+1)%} checked="checked" {%end%}>{{positionName(i+1)}}
+                                            </label>
+                                            {%end%}
+                                            </div>
+                                    </div>
+                                </div>
+                                {%elif questionone['type']==10%}
+                                <div class="form-group">
+                                    <label class="control-label col-xs-2">题型：</label>
+                                    <label class="radio-inline">剪发需求题</label>
+                                </div>
+                                <hr/>
+                                <div id="J-hair" style="">
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">五官正面照：</label>
+                                        <div class="col-xs-2">
+                                            <input type="hidden" name="face" id="J-face-hid" value="{{upfile(questionone['imgs']['face'])}}">
+                                            <img src="{{upfile(questionone['imgs']['face'])}}" alt="" width="80" height="80"/>
+                                            <a href="#" id="face" class="btn btn-default">上传</a>
+                                        </div>
+                                        <label class="control-label col-xs-2">正面生活照：</label>
+                                        <div class="col-xs-2">
+                                            <input type="hidden" name="life" id="J-life-hid" value="{{upfile(questionone['imgs']['life'])}}">
+                                            <img src="{{upfile(questionone['imgs']['life'])}}" alt="" width="80" height="80"/>
+                                            <a href="#" id="life" class="btn btn-default">上传</a>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">五官合成照：</label>
+                                        <div class="col-xs-2">
+                                            <input type="hidden" name="sketch" id="J-sketch-hid" value="{{upfile(questionone['imgs']['sketch'])}}">
+                                            <img src="{{upfile(questionone['imgs']['sketch'])}}" alt="" width="80" height="80"/>
+                                            <a href="#" id="sketch" class="btn btn-default">上传</a>
+                                        </div>
+                                    </div>
+
+
+                                    <hr>
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">人物基本属性</label>
+                                        <label class="control-label col-xs-2" style="margin-left:32% ">需求意向</label>
+                                        <br>
+                                        <br>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">年龄：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control " name="age">
+                                                <option value="20岁以下"{%if questionone['info']['age']=='20岁以下'%} selected="selected" {%end%}>20岁以下</option>
+                                                <option value="21-25岁" {%if questionone['info']['age']=='21-25岁'%} selected="selected" {%end%}>21-25岁</option>
+                                                <option value="26-30岁" {%if questionone['info']['age']=='26-30岁'%} selected="selected" {%end%}>26-30岁</option>
+                                                <option value="31-35岁" {%if questionone['info']['age']=='31-35岁'%} selected="selected" {%end%}>31-35岁</option>
+                                                <option value="36以上"  {%if questionone['info']['age']=='36以上'%} selected="selected" {%end%}>36以上</option>
+                                            </select>
+                                        </div>
+
+                                        <label class="control-label col-xs-2">剪发初衷：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="hair_intention">
+                                                <option value="头发长了修修" {%if questionone['info']['hair_intention']=='头发长了修修'%} selected="selected" {%end%}>头发长了修修</option>
+                                                <option value="想试试新发型" {%if questionone['info']['hair_intention']=='想试试新发型'%} selected="selected" {%end%}>想试试新发型</option>
+                                                <option value="心情不好了" {%if questionone['info']['hair_intention']=='心情不好了'%} selected="selected" {%end%}>心情不好了</option>
+                                                <option value="参加聚会" {%if questionone['info']['hair_intention']=='参加聚会'%} selected="selected" {%end%}>参加聚会</option>
+                                                <option value="失恋了" {%if questionone['info']['hair_intention']=='失恋了'%} selected="selected" {%end%}>失恋了</option>
+                                                <option value="被吐槽发型土" {%if questionone['info']['hair_intention']=='被吐槽发型土'%} selected="selected" {%end%}>被吐槽发型土</option>
+                                                <option value="你看着办吧" {%if questionone['info']['hair_intention']=='你看着办吧'%} selected="selected" {%end%}>你看着办吧</option>
+                                                <option value="好看就好" {%if questionone['info']['hair_intention']=='好看就好'%} selected="selected" {%end%}>好看就好</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">身高：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="tall">
+                                                <option value="150cm上下" {%if questionone['info']['tall']=='150cm上下'%} selected="selected" {%end%}>150cm上下</option>
+                                                <option value="155cm上下" {%if questionone['info']['tall']=='155cm上下'%} selected="selected" {%end%}>155cm上下</option>
+                                                <option value="160cm上下" {%if questionone['info']['tall']=='160cm上下'%} selected="selected" {%end%}>160cm上下</option>
+                                                <option value="165cm上下" {%if questionone['info']['tall']=='165cm上下'%} selected="selected" {%end%}>165cm上下</option>
+                                                <option value="170cm上下" {%if questionone['info']['tall']=='170cm上下'%} selected="selected" {%end%}>170cm上下</option>
+                                            </select>
+                                        </div>
+
+                                        <label class="control-label col-xs-2">风格喜好：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="style_like">
+                                                <option value="生活化" {%if questionone['info']['style_like']=='生活化'%} selected="selected" {%end%}>生活化</option>
+                                                <option value="职业化" {%if questionone['info']['style_like']=='职业化'%} selected="selected" {%end%}>职业化</option>
+                                                <option value="时尚化" {%if questionone['info']['style_like']=='时尚化'%} selected="selected" {%end%}>时尚化</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">身材：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control " name="body">
+                                                <option value="苗条" {%if questionone['info']['body']=='苗条'%} selected="selected" {%end%}>苗条</option>
+                                                <option value="匀称" {%if questionone['info']['body']=='匀称'%} selected="selected" {%end%}>匀称</option>
+                                                <option value="丰腴" {%if questionone['info']['body']=='丰腴'%} selected="selected" {%end%}>丰腴</option>
+                                            </select>
+                                        </div>
+                                        <label class="control-label col-xs-2">想剪长度：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="hair_len">
+                                                <option value="超短发" {%if questionone['info']['hair_len']=='超短发'%} selected="selected" {%end%}>超短发</option>
+                                                <option value="短发" {%if questionone['info']['hair_len']=='短发'%} selected="selected" {%end%}>短发</option>
+                                                <option value="中发" {%if questionone['info']['hair_len']=='中发'%} selected="selected" {%end%}>中发</option>
+                                                <option value="长发" {%if questionone['info']['hair_len']=='长发'%} selected="selected" {%end%}>长发</option>
+                                                <option value="没想法" {%if questionone['info']['hair_len']=='没想法'%} selected="selected" {%end%}>没想法</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">职业：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control " name="profession">
+                                                <option value="白领" {%if questionone['info']['profession']=='白领'%} selected="selected" {%end%}>白领</option>
+                                                <option value="学生" {%if questionone['info']['profession']=='学生'%} selected="selected" {%end%}>学生</option>
+                                                <option value="公务员" {%if questionone['info']['profession']=='公务员'%} selected="selected" {%end%}>公务员</option>
+                                                <option value="自由职业" {%if questionone['info']['profession']=='自由职业'%} selected="selected" {%end%}>自由职业</option>
+                                                <option value="其它" {%if questionone['info']['profession']=='其它'%} selected="selected" {%end%}>其它</option>
+                                            </select>
+                                        </div>
+
+                                        <label class="control-label col-xs-2">烫发需求：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="hair_wave">
+                                                <option value="可接受" {%if questionone['info']['hair_wave']=='可接受'%} selected="selected" {%end%}>可接受</option>
+                                                <option value="不接受" {%if questionone['info']['hair_wave']=='不接受'%} selected="selected" {%end%}>不接受</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">性别：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control " name="sex">
+                                                <option value="男" {%if questionone['info']['sex']=='男'%} selected="selected" {%end%}>男</option>
+                                                <option value="女" {%if questionone['info']['sex']=='女'%} selected="selected" {%end%}>女</option>
+                                            </select>
+                                        </div>
+                                        <label class="control-label col-xs-2">染发需求：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="hair_dye">
+                                                <option value="可接受" {%if questionone['info']['hair_dye']=='可接受'%} selected="selected" {%end%}>可接受</option>
+                                                <option value="不接受" {%if questionone['info']['hair_dye']=='不接受'%} selected="selected" {%end%}>不接受</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-2">发质：</label>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control " name="hair_quality">
+                                                <option value="无" {%if questionone['info']['hair_quality']=='无'%} selected="selected" {%end%}>无</option>
+                                                <option value="偏疏" {%if questionone['info']['hair_quality']=='偏疏'%} selected="selected" {%end%}>偏疏</option>
+                                                <option value="偏密" {%if questionone['info']['hair_quality']=='偏密'%} selected="selected" {%end%}>偏密</option>
+                                                <option value="自然卷" {%if questionone['info']['hair_quality']=='自然卷'%} selected="selected" {%end%}>自然卷</option>
+                                                <option value="沙发" {%if questionone['info']['hair_quality']=='沙发'%} selected="selected" {%end%}>沙发</option>
+                                            </select>
+                                        </div>
+
+                                    </div>
+
+                                    <hr>
+
+                                    {%if questionone['section'] !='boss'%}
+                                <div class="form-group">
+                                    <label class="control-label col-xs-2">临摹方案一：</label>
+
+                                    <div class="col-xs-2">
+                                        <p style="margin-top: 8px" name="copy1_style">
+                                            {{positionName(4-copyStyle(questionone['section']))}}</p>
+                                        <br>
+                                        <input type="hidden" name="copy1_pic" id="J-copy1-hid"
+                                               value="{{upfile(questionone['imgs']['copy1'])}}">
+                                        <img src="{{upfile(questionone['imgs']['copy1'])}}" alt="" width="80"
+                                             height="80"/>
+                                        <a href="#" id="copy1" class="btn btn-default">上传</a>
+                                    </div>
+
+
+                                    <label class="control-label col-xs-2">临摹方案二：</label>
+
+                                    <div class="col-xs-2">
+                                        <p name="copy2_style" style="margin-top: 8px">
+                                            {{positionName(7-copyStyle(questionone['section']))}}</p>
+                                        <br>
+                                        <input type="hidden" name="copy2_pic" id="J-copy2-hid"
+                                               value="{{upfile(questionone['imgs']['copy2'])}}">
+                                        <img src="{{upfile(questionone['imgs']['copy2'])}}" alt="" width="80"
+                                             height="80"/>
+                                        <a href="#" id="copy2" class="btn btn-default">上传</a>
+                                    </div>
+
+                                    <label class="control-label col-xs-2">临摹方案三：</label>
+
+                                    <div class="col-xs-2">
+                                        <p name="copy3_style" style="margin-top: 8px">
+                                            {{positionName(10-copyStyle(questionone['section']))}}</p>
+                                        <br>
+                                        <input type="hidden" name="copy3_pic" id="J-copy3-hid"
+                                               value="{{upfile(questionone['imgs']['copy3'])}}">
+                                        <img src="{{upfile(questionone['imgs']['copy3'])}}" alt="" width="80"
+                                             height="80"/>
+                                        <a href="#" id="copy3" class="btn btn-default">上传</a>
+                                    </div>
+                                </div>
+                                <hr>
+                                {%end%}
+                                </div>
+                                {%end%}
+                                <div class="alert alert-danger" style="display: none;">
+                                    <strong>失败！</strong> 失败细节啥啥啥...
+                                </div>
+                                <a class="btn btn-primary" id="addButton"> 修改 </a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br/>
+        </div>
+
+    </div>
+
+{%end%}
