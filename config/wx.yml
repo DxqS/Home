@@ -1,11 +1,11 @@
-#local:
-#  TOKEN: zhangzhen
-#  APP_ID: wx60f833aaeec1a5a3
-#  APP_SECRET: 3842d816bd58dee4b685a17ec18d2096
-#  MCH_ID: 1354231202
-#  PAY_KEY: HyI2Lf487fjE5rDAGdsUEBOl2uVBs67c
-#  APICLIENT_CERT: resource/apiclient_cert.pem
-#  APICLIENT_KEY: resource/apiclient_key.pem
+local:
+  TOKEN: zhangzhen
+  APP_ID: wx60f833aaeec1a5a3
+  APP_SECRET: 3842d816bd58dee4b685a17ec18d2096
+  MCH_ID: 1354231202
+  PAY_KEY: HyI2Lf487fjE5rDAGdsUEBOl2uVBs67c
+  APICLIENT_CERT: resource/apiclient_cert.pem
+  APICLIENT_KEY: resource/apiclient_key.pem
 #
 #
 #develop:
