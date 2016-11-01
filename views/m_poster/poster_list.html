@@ -1,0 +1,90 @@
+{% extends "../layout/mbase.html" %}
+
+{% block css %}{% end %}
+
+{% block js %}
+<script>
+    $(function () {
+
+        $('.status-btn').click(function () {
+            if (!confirm('确认' + $(this).html() + '该素材?')) {
+                return false;
+            }
+
+            $.post($(this).attr('href'), function (res) {
+                if (res.status == 1) {
+                    window.location.reload();
+                }
+            }, 'json');
+
+            return false;
+        });
+        $('.push').click(function () {
+            $.post('/m/web/material/push/' + $(this).data('new'), function (res) {
+                if (res.status == 1) {
+                    alert('已推荐');
+                    window.location.reload();
+                }
+            }, 'json')
+        })
+    });
+</script>
+{% end %}
+
+{% block nav %}
+{% module Template("module/backnav.html", name='material') %}
+{% end %}
+
+
+{% block container%}
+
+<div class="container">
+    <a href="/m/poster/add" class="btn btn-primary pull-right btn-sm layout-mt20">添加海报素材</a>
+
+    <h3>素材
+        <small>列表</small>
+    </h3>
+    <hr/>
+    <div class="row">
+        <div class="col-xs-3">
+            <div class="input-group layout-mt20">
+                <input type="text" class="form-control" placeholder="输入名称搜索">
+                <span class="input-group-btn"> <a class="btn btn-default"> 搜索 </a> </span>
+            </div>
+            <div class="list-group layout-mt20">
+                <a href="/m/poster/list" class="list-group-item active">海报素材</a>
+                <a href="" class="list-group-item ">占坑</a>
+            </div>
+        </div>
+        <div class="col-xs-9">
+            <table class="table table-hover layout-mt20">
+                <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>标题</th>
+                    <th>阅读量</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>上架</td>
+                    <td width="200" align="right">
+                        <a href="/m/poster/edit/1" class="btn btn-primary btn-sm">编辑</a>
+                        <a href="" class="btn btn-danger btn-sm status-btn">下架</a>
+                        <a href="javascript:;" class="btn btn-primary btn-sm push" data-new=""
+                           style="color:red;">每日一推</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+{% end %}
