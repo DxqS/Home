@@ -1,4 +1,4 @@
-# wxvue
+# my-pro
 
 > A Vue.js project
 
