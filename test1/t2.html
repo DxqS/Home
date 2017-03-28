@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="../static/js/jquery-1.9.1.min.js"></script>
+</head>
+<body>
+<div id="counter-event-example">
+    <p>{{ total }}</p>
+    <button-counter v-on:increment="incrementTotal"></button-counter>
+    <button-counter v-on:increment="incrementTotal"></button-counter>
+    <input id="mobile">
+    <button @click="tt"></button>
+</div>
+</body>
+</html>
+<script>
+    Vue.component('button-counter', {
+        template: '<button v-on:click="increment">{{ counter }}</button>',
+        data: function () {
+            return {
+                counter: 0
+            }
+        },
+        methods: {
+            increment: function () {
+                this.counter += 1
+                this.$emit('increment')
+            }
+        },
+    })
+
+    new Vue({
+        el: '#counter-event-example',
+        data: {
+            total: 0
+        },
+        methods: {
+            incrementTotal: function () {
+                this.total += 1
+
+            },
+            tt: function () {
+                var ss = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+                var aa = $('#mobile').val();
+                if (ss.test(aa)) {
+                    alert(1)
+                }else{
+                    alert(2)
+                }
+            }
+        }
+    })
+</script>
