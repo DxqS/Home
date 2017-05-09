@@ -33,3 +33,4 @@ ft = ImageFont.truetype(font, size)
 # user_name_x = int(375 - float(size * len_c + size * len_o / 2) / 2)
 draw.text([320-sss/2, 198], text, font=ft)
 im.save('1.jpg')
+print coding
