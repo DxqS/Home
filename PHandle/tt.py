@@ -13,8 +13,8 @@ poster.save()
 
 from PIL import Image, ImageDraw, ImageFont
 
-im = Image.open('../resource/graduate.jpg')
-font = '../resource/xk.ttf'
+im = Image.open('poster_back.png')
+font = 'app.ttf'
 size = 50
 text = u'a大法官ffff'
 ft = ImageFont.truetype(font, size) if font else None
@@ -32,5 +32,7 @@ ft = ImageFont.truetype(font, size)
 #
 # user_name_x = int(375 - float(size * len_c + size * len_o / 2) / 2)
 draw.text([320-sss/2, 198], text, font=ft)
+text2 = u'$$我爱你%\nv环环a'
+draw.multiline_text([320-sss/2, 250], text2, font=ft,align="center")
 im.save('1.jpg')
 print coding
