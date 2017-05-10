@@ -46,3 +46,4 @@ draw.text([320 - sss / 2, 198], text, font=ft)
 text2 = u'$$我爱你%\nv环环a'
 draw.multiline_text([320 - sss / 2, 250], text2, font=ft, align="center")
 im.save('1.jpg')
+print coding
