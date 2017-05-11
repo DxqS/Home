@@ -9,6 +9,7 @@ from common import base
 
 class Index(base.BaseHandler):
     def get(self):
+
         return self.render('vue/vue_index.html')
 
     def post(self):
