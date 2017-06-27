@@ -1,11 +1,10 @@
-# coding:utf-8
+# !/usr/bin/env python3
+# coding: utf-8
 '''
 Created on 2017/6/27.
 
 @author: chk01
 '''
-# !/usr/bin/env python3
-# coding: utf-8
 
 """
 这个脚本会自动获取所有用户，包括群聊中的非好友群成员，然后排重，再获取 puid，最后把本次新增和没用到的 puid 和对应用户名称标出来。

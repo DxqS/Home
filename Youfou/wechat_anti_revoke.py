@@ -1,4 +1,5 @@
-# coding:utf-8
+#!/usr/bin/env python3
+# coding: utf-8
 '''
 Created on 2017/6/27.
 
