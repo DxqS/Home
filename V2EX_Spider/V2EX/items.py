@@ -5,10 +5,19 @@
 # See documentation in:
 # http://doc.scrapy.org/en/latest/topics/items.html
 
-import scrapy
+from scrapy import Item,Field
 
 
-class V2ExItem(scrapy.Item):
+class V2ExItem(Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    pass
+    author_url = Field()
+    author_avatar_url = Field()
+    article_url = Field()
+    article_title = Field()
+    node = Field()
+    node_url = Field()
+    author_name = Field()
+    last_reply_name = Field()
+    last_reply_url = Field()
+    last_reply_time = Field()

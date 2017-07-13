@@ -12,8 +12,8 @@ from V2EX.items import V2ExItem
 
 class Spider(CrawlSpider):
     name = 'dxq_spider'
-    host = 'https//www.v2ex.com'
-    start_urls = ['https//www.v2ex.com']
+    host = 'https://www.v2ex.com'
+    start_urls = ['https://www.v2ex.com']
 
     def parse(self, response):
         print 'xxxxxxxxxxxxxxx=====================>'
