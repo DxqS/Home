@@ -23,7 +23,7 @@ DOWNLOADER_MIDDLEWARES = {
     "V2EX.middlewares.UserAgentMiddleware": 401
 }
 
-FEED_URI = u'/Users/Dxq/Documents/v2ex-home.csv'
+FEED_URI = u'/Users/Dxq/Documents/tt.csv'
 FEED_FORMAT = 'CSV'
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 # CONCURRENT_REQUESTS = 32
