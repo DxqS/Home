@@ -5,7 +5,7 @@
 # See documentation in:
 # http://doc.scrapy.org/en/latest/topics/items.html
 
-from scrapy import Item,Field
+from scrapy import Item, Field
 
 
 class V2ExItem(Item):
@@ -18,6 +18,6 @@ class V2ExItem(Item):
     node = Field()
     node_url = Field()
     author_name = Field()
-    last_reply_name = Field()
+    last_reply_name = Field(serializer=str)
     last_reply_url = Field()
     last_reply_time = Field()
